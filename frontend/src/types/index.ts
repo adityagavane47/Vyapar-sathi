@@ -163,3 +163,47 @@ export interface AgentStatus {
   step_count: number;
   memory_context: Record<string, any>;
 }
+
+export interface PortHubSignal {
+  port_name: string;
+  port_code: string;
+  congestion_index: number;
+  weather_condition: string;
+  vessel_wait_time_days: number;
+  status: string;
+}
+
+export interface ExternalSignals {
+  timestamp: string;
+  weather_severity_index: number;
+  overall_port_congestion: number;
+  freight_rate_spike_index: number;
+  active_port_hubs: PortHubSignal[];
+  global_logistics_risk: string;
+}
+
+export interface SupplierRiskPrediction {
+  supplier_id: number;
+  supplier_name: string;
+  disruption_probability: number;
+  risk_level: 'Low' | 'Medium' | 'High' | 'Critical';
+  key_risk_drivers: string[];
+  po_number?: string;
+  component_name?: string;
+  feature_snapshot: {
+    reliability_score: number;
+    lead_time_days: number;
+    weather_severity_index: number;
+    port_congestion_index: number;
+  };
+}
+
+export interface ProactiveScanResult {
+  status: string;
+  timestamp: string;
+  total_pos_scanned: number;
+  proactive_disruptions_generated: number;
+  generated_events: { event_id: number; event_code: string; description: string }[];
+  predictions: SupplierRiskPrediction[];
+}
+

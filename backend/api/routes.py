@@ -17,6 +17,7 @@ from backend.schemas.pydantic_models import (
 from backend.simulation.engine import SimulationEngine
 from backend.agent.orchestrator import AgentOrchestrator
 from backend.tools.supply_chain_tools import SupplyChainTools
+from backend.prediction import ExternalSignalsSimulator, SupplierRiskModel, ProactiveScanner
 
 router = APIRouter()
 
@@ -205,3 +206,34 @@ def trigger_disruption(scenario: str = Query("supplier_delay_autonomous"), db: S
     sim = SimulationEngine(db)
     event = sim.trigger_scenario(scenario)
     return {"status": "success", "disruption": event}
+
+# 9. Predictive Intelligence & Proactive Scanner
+@router.get("/predictive/external-signals")
+def get_external_signals():
+    return ExternalSignalsSimulator.get_live_signals()
+
+@router.get("/predictive/supplier-risk")
+def get_supplier_risk_predictions(db: Session = Depends(get_db)):
+    suppliers = db.query(Supplier).all()
+    model = SupplierRiskModel()
+    results = []
+    for s in suppliers:
+        s_dict = {
+            "id": s.id,
+            "code": s.code,
+            "name": s.name,
+            "reliability_score": s.reliability_score,
+            "quality_rating": s.quality_rating,
+            "lead_time_days": s.lead_time_days,
+            "max_capacity": s.max_capacity
+        }
+        ext = ExternalSignalsSimulator.get_supplier_external_features(s.code)
+        risk = model.predict_risk(s_dict, ext)
+        results.append(risk)
+    return results
+
+@router.post("/predictive/scan")
+def run_proactive_scan(db: Session = Depends(get_db)):
+    scanner = ProactiveScanner(db)
+    return scanner.run_proactive_scan()
+

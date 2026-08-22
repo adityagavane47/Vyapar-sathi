@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, ShieldAlert, Cpu, RefreshCw, Layers, PlusCircle, Sparkles, Wifi, Sliders } from 'lucide-react';
+import { Activity, ShieldAlert, Cpu, RefreshCw, Layers, PlusCircle, Sparkles, Wifi, Sliders, Radar } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: string;
@@ -32,6 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const tabs = [
     { id: 'overview', label: 'Executive Overview', icon: Activity },
+    { id: 'predictive', label: 'Predictive Radar', icon: Radar },
     { id: 'disruptions', label: 'Disruption Center', icon: ShieldAlert, badge: activeDisruptionsCount },
     { id: 'agent', label: 'Agent Brain & State', icon: Cpu },
     { id: 'approvals', label: 'Human Approvals', icon: Layers, badge: pendingApprovalsCount, badgeColor: 'bg-amber-500' },

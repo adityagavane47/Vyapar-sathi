@@ -95,4 +95,9 @@ export const api = {
       `${API_BASE}/simulation/trigger-disruption?scenario=${scenario}`,
       { method: 'POST' }
     ),
+
+  // Predictive Intelligence
+  getExternalSignals: () => fetchJson<import('./types').ExternalSignals>(`${API_BASE}/predictive/external-signals`),
+  getSupplierRiskPredictions: () => fetchJson<import('./types').SupplierRiskPrediction[]>(`${API_BASE}/predictive/supplier-risk`),
+  runProactiveScan: () => fetchJson<import('./types').ProactiveScanResult>(`${API_BASE}/predictive/scan`, { method: 'POST' }),
 };

@@ -23,6 +23,8 @@ import { ScenarioSandbox } from './components/ScenarioSandbox';
 import { CustomDisruptionModal } from './components/CustomDisruptionModal';
 import { AddSupplierModal } from './components/AddSupplierModal';
 import { CreatePurchaseOrderModal } from './components/CreatePurchaseOrderModal';
+import { PredictiveForecastingView } from './components/PredictiveForecastingView';
+import { ExternalSignals, SupplierRiskPrediction, ProactiveScanResult } from './types';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -38,6 +40,11 @@ export function App() {
   const [approvals, setApprovals] = useState<HumanApproval[]>([]);
   const [audits, setAudits] = useState<AuditEvent[]>([]);
   const [agentStatus, setAgentStatus] = useState<AgentStatus | null>(null);
+
+  // Predictive Intelligence State
+  const [externalSignals, setExternalSignals] = useState<ExternalSignals | null>(null);
+  const [riskPredictions, setRiskPredictions] = useState<SupplierRiskPrediction[]>([]);
+  const [proactiveScanResult, setProactiveScanResult] = useState<ProactiveScanResult | null>(null);
 
   // Baseline Initial Snapshots for Real-Time Delta Highlighting
   const [initialInventory, setInitialInventory] = useState<InventoryItem[]>([]);
@@ -74,7 +81,7 @@ export function App() {
   const loadData = async (isReset: boolean = false) => {
     try {
       setLoading(true);
-      const [disList, invList, supList, poList, prdList, decList, appList, audList] = await Promise.all([
+      const [disList, invList, supList, poList, prdList, decList, appList, audList, extSig, riskPreds] = await Promise.all([
         api.getDisruptions(),
         api.getInventory(),
         api.getSuppliers(),
@@ -83,7 +90,12 @@ export function App() {
         api.getDecisions(),
         api.getApprovals(),
         api.getAuditLogs(),
+        api.getExternalSignals().catch(() => null),
+        api.getSupplierRiskPredictions().catch(() => []),
       ]);
+
+      setExternalSignals(extSig);
+      setRiskPredictions(riskPreds);
 
       // Merge backend suppliers with user-added custom suppliers
       const mergedSuppliers = [
@@ -218,6 +230,12 @@ export function App() {
     setPurchaseOrders((prev) => [...prev, newPo]);
   };
 
+  const handleRunProactiveScan = async () => {
+    const scanRes = await api.runProactiveScan();
+    setProactiveScanResult(scanRes);
+    await loadData();
+  };
+
   const activeDisruptionsCount = disruptions.filter((d) => d.status !== 'RESOLVED' && (d.status as string) !== 'COMPLETE').length;
   const pendingApprovalsCount = approvals.filter((a) => a.status === 'PENDING').length;
 
@@ -250,6 +268,17 @@ export function App() {
                 onSelectDisruption={(id) => setSelectedDisruptionId(id)}
                 onNavigateToTab={(tab) => setActiveTab(tab)}
                 onOpenCustomModal={() => setIsCustomModalOpen(true)}
+              />
+            )}
+
+            {activeTab === 'predictive' && (
+              <PredictiveForecastingView
+                externalSignals={externalSignals}
+                riskPredictions={riskPredictions}
+                onRunProactiveScan={handleRunProactiveScan}
+                onSelectDisruption={(id) => setSelectedDisruptionId(id)}
+                onNavigateToTab={(tab) => setActiveTab(tab)}
+                proactiveScanResult={proactiveScanResult}
               />
             )}
 
