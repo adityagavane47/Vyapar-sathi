@@ -17,7 +17,8 @@ import {
   Sparkles,
   Layers,
   SlidersHorizontal,
-  Eye
+  Eye,
+  FilePlus2
 } from 'lucide-react';
 import { InventoryItem, Supplier, PurchaseOrder, ProductionOrder } from '../types';
 
@@ -30,6 +31,7 @@ interface SupplyChainExplorerProps {
   initialPurchaseOrders?: PurchaseOrder[];
   initialSuppliers?: Supplier[];
   onOpenAddSupplierModal?: () => void;
+  onOpenCreatePoModal?: () => void;
 }
 
 export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
@@ -41,6 +43,7 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
   initialPurchaseOrders = [],
   initialSuppliers = [],
   onOpenAddSupplierModal,
+  onOpenCreatePoModal,
 }) => {
   const [subTab, setSubTab] = useState<'inventory' | 'suppliers' | 'pos' | 'production'>('inventory');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -241,6 +244,16 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
             </button>
           )}
 
+          {subTab === 'pos' && onOpenCreatePoModal && (
+            <button
+              onClick={onOpenCreatePoModal}
+              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-md shadow-indigo-600/30 transition shrink-0"
+            >
+              <FilePlus2 className="w-3.5 h-3.5" />
+              <span>+ Create PO</span>
+            </button>
+          )}
+
           <div className="relative">
             <input
               type="text"
@@ -416,74 +429,91 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
 
         {/* 3. Purchase Orders */}
         {subTab === 'pos' && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="text-slate-400 uppercase bg-slate-800/40 border-b border-slate-800 text-[10px] tracking-wider font-mono">
-                <tr>
-                  <th className="py-3.5 px-4">PO Code</th>
-                  <th className="py-3.5 px-4">Component SKU & Supplier</th>
-                  <th className="py-3.5 px-4">Order Quantity</th>
-                  <th className="py-3.5 px-4">Total Amount (INR)</th>
-                  <th className="py-3.5 px-4">Expected Delivery</th>
-                  <th className="py-3.5 px-4">ERP Order Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 font-sans">
-                {filteredPos.map((po) => {
-                  const delta = getPoDelta(po);
-                  return (
-                    <tr
-                      key={po.id}
-                      className={`hover:bg-slate-800/30 transition ${
-                        delta.isChanged ? 'bg-indigo-950/20' : ''
-                      }`}
-                    >
-                      <td className="py-4 px-4 font-mono font-bold text-indigo-400">
-                        <div className="flex items-center space-x-2">
-                          <span>{po.po_number}</span>
-                          {delta.isNew && (
-                            <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                              NEW (Agent Generated)
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-slate-400">
+                ERP Purchase Order Ledger ({filteredPos.length} Active Orders)
+              </span>
+              {onOpenCreatePoModal && (
+                <button
+                  onClick={onOpenCreatePoModal}
+                  className="text-xs text-indigo-400 hover:text-indigo-300 font-bold flex items-center space-x-1"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>+ Create Purchase Order</span>
+                </button>
+              )}
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="text-slate-400 uppercase bg-slate-800/40 border-b border-slate-800 text-[10px] tracking-wider font-mono">
+                  <tr>
+                    <th className="py-3.5 px-4">PO Code</th>
+                    <th className="py-3.5 px-4">Component SKU & Supplier</th>
+                    <th className="py-3.5 px-4">Order Quantity</th>
+                    <th className="py-3.5 px-4">Total Amount (INR)</th>
+                    <th className="py-3.5 px-4">Expected Delivery</th>
+                    <th className="py-3.5 px-4">ERP Order Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-sans">
+                  {filteredPos.map((po) => {
+                    const delta = getPoDelta(po);
+                    return (
+                      <tr
+                        key={po.id}
+                        className={`hover:bg-slate-800/30 transition ${
+                          delta.isChanged ? 'bg-indigo-950/20' : ''
+                        }`}
+                      >
+                        <td className="py-4 px-4 font-mono font-bold text-indigo-400">
+                          <div className="flex items-center space-x-2">
+                            <span>{po.po_number}</span>
+                            {delta.isNew && (
+                              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                NEW (Added)
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="font-bold text-white text-sm">{getComponentName(po.component_id)}</div>
+                          <div className="text-xs text-slate-400">{getSupplierName(po.supplier_id)}</div>
+                        </td>
+                        <td className="py-4 px-4 text-white font-bold font-mono">{po.quantity?.toLocaleString()} units</td>
+                        <td className="py-4 px-4 text-white font-bold font-mono">
+                          ₹{po.total_amount?.toLocaleString('en-IN')}
+                        </td>
+                        <td className="py-4 px-4 text-slate-400 font-mono">
+                          {new Date(po.expected_delivery_date).toLocaleDateString('en-IN')}
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center space-x-2">
+                            <span
+                              className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
+                                po.status === 'Delayed'
+                                  ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30 animate-pulse'
+                                  : po.status === 'Quality_Failed'
+                                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                                  : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                              }`}
+                            >
+                              {po.status}
                             </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-white text-sm">{getComponentName(po.component_id)}</div>
-                        <div className="text-xs text-slate-400">{getSupplierName(po.supplier_id)}</div>
-                      </td>
-                      <td className="py-4 px-4 text-white font-bold font-mono">{po.quantity?.toLocaleString()} units</td>
-                      <td className="py-4 px-4 text-white font-bold font-mono">
-                        ₹{po.total_amount?.toLocaleString('en-IN')}
-                      </td>
-                      <td className="py-4 px-4 text-slate-400 font-mono">
-                        {new Date(po.expected_delivery_date).toLocaleDateString('en-IN')}
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center space-x-2">
-                          <span
-                            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
-                              po.status === 'Delayed'
-                                ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30 animate-pulse'
-                                : po.status === 'Quality_Failed'
-                                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                                : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            }`}
-                          >
-                            {po.status}
-                          </span>
-                          {delta.statusChanged && delta.baseline && (
-                            <span className="text-[10px] text-rose-400 font-mono">
-                              (was {delta.baseline.status})
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                            {delta.statusChanged && delta.baseline && (
+                              <span className="text-[10px] text-rose-400 font-mono">
+                                (was {delta.baseline.status})
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
 

@@ -22,6 +22,7 @@ import { AuditLogView } from './components/AuditLogView';
 import { ScenarioSandbox } from './components/ScenarioSandbox';
 import { CustomDisruptionModal } from './components/CustomDisruptionModal';
 import { AddSupplierModal } from './components/AddSupplierModal';
+import { CreatePurchaseOrderModal } from './components/CreatePurchaseOrderModal';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -54,8 +55,19 @@ export function App() {
     }
   });
 
+  // User-created custom POs in state
+  const [customPurchaseOrders, setCustomPurchaseOrders] = useState<PurchaseOrder[]>(() => {
+    try {
+      const stored = localStorage.getItem('vyapar_custom_pos');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [isCustomModalOpen, setIsCustomModalOpen] = useState<boolean>(false);
   const [isAddSupplierModalOpen, setIsAddSupplierModalOpen] = useState<boolean>(false);
+  const [isCreatePoModalOpen, setIsCreatePoModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Load state from backend
@@ -79,10 +91,16 @@ export function App() {
         ...customSuppliers.filter((c) => !supList.some((s) => s.id === c.id || s.code === c.code)),
       ];
 
+      // Merge backend POs with user-created custom POs
+      const mergedPos = [
+        ...poList,
+        ...customPurchaseOrders.filter((c) => !poList.some((p) => p.id === c.id || p.po_number === c.po_number)),
+      ];
+
       setDisruptions(disList);
       setInventory(invList);
       setSuppliers(mergedSuppliers);
-      setPurchaseOrders(poList);
+      setPurchaseOrders(mergedPos);
       setProductionOrders(prdList);
       setDecisions(decList);
       setApprovals(appList);
@@ -92,7 +110,7 @@ export function App() {
       if (!isInitialSnapshotSet.current || isReset) {
         setInitialInventory(JSON.parse(JSON.stringify(invList)));
         setInitialPurchaseOrders(JSON.parse(JSON.stringify(poList)));
-        setInitialSuppliers(JSON.parse(JSON.stringify(mergedSuppliers)));
+        setInitialSuppliers(JSON.parse(JSON.stringify(supList)));
         isInitialSnapshotSet.current = true;
       }
 
@@ -154,7 +172,9 @@ export function App() {
     await api.resetSimulation();
     setSelectedDisruptionId(null);
     setCustomSuppliers([]);
+    setCustomPurchaseOrders([]);
     localStorage.removeItem('vyapar_custom_suppliers');
+    localStorage.removeItem('vyapar_custom_pos');
     await loadData(true);
   };
 
@@ -185,6 +205,17 @@ export function App() {
       console.warn('Could not save to localStorage', e);
     }
     setSuppliers((prev) => [...prev, newSupplier]);
+  };
+
+  const handleCreatePurchaseOrder = (newPo: PurchaseOrder) => {
+    const updated = [...customPurchaseOrders, newPo];
+    setCustomPurchaseOrders(updated);
+    try {
+      localStorage.setItem('vyapar_custom_pos', JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Could not save to localStorage', e);
+    }
+    setPurchaseOrders((prev) => [...prev, newPo]);
   };
 
   const activeDisruptionsCount = disruptions.filter((d) => d.status !== 'RESOLVED' && (d.status as string) !== 'COMPLETE').length;
@@ -255,6 +286,7 @@ export function App() {
                 initialPurchaseOrders={initialPurchaseOrders}
                 initialSuppliers={initialSuppliers}
                 onOpenAddSupplierModal={() => setIsAddSupplierModalOpen(true)}
+                onOpenCreatePoModal={() => setIsCreatePoModalOpen(true)}
               />
             )}
 
@@ -287,6 +319,17 @@ export function App() {
         onClose={() => setIsAddSupplierModalOpen(false)}
         onAddSupplier={handleAddSupplier}
         existingCount={suppliers.length}
+      />
+
+      {/* Create Purchase Order Modal with AI Supplier Matching */}
+      <CreatePurchaseOrderModal
+        isOpen={isCreatePoModalOpen}
+        onClose={() => setIsCreatePoModalOpen(false)}
+        onCreatePo={handleCreatePurchaseOrder}
+        suppliers={suppliers}
+        inventory={inventory}
+        productionOrders={productionOrders}
+        existingPoCount={purchaseOrders.length}
       />
     </div>
   );
