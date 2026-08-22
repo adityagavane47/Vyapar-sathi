@@ -57,10 +57,13 @@ Vyapar-sathi/
 - Node.js 18+ and npm
 
 ### Backend Setup
-1. Navigate to the `backend` directory.
+1. Navigate to the project root:
+   ```bash
+   cd Vyapar-sathi
+   ```
 2. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install -r backend/requirements.txt
    ```
 3. Run the FastAPI server (will auto-seed the database if empty):
    ```bash
