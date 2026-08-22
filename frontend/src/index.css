@@ -1,22 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Base App Theme */
+/* Base App Theme - Simple, Minimalist & Elegant */
 body {
-  @apply bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden;
+  @apply bg-[#0b0f19] text-slate-100 font-sans antialiased overflow-x-hidden;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  letter-spacing: -0.01em;
 }
 
-/* Custom Sleek Dark Scrollbar */
+/* Elegant Slim Dark Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-  background: #020617;
+  background: #090d16;
 }
 ::-webkit-scrollbar-thumb {
   background: #1e293b;
@@ -26,41 +27,34 @@ body {
   background: #334155;
 }
 
-/* Glassmorphism Surface Tokens */
-.glass-panel {
-  @apply bg-slate-900/80 backdrop-blur-md border border-slate-800/80 rounded-2xl shadow-xl transition-all duration-200;
+/* Minimalist Glass Surfaces */
+.glass-card {
+  @apply bg-slate-900/70 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-xl transition-all duration-200;
 }
 
-.glass-panel-elevated {
-  @apply bg-slate-900/90 backdrop-blur-lg border border-slate-700/60 rounded-2xl shadow-2xl transition-all duration-200;
+.glass-card:hover {
+  @apply border-slate-700/90;
 }
 
-/* KPI Card semantic glow effects */
-.kpi-glow {
-  @apply transition-all duration-200;
-}
-.kpi-glow:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px -6px rgba(99, 102, 241, 0.15);
+.glass-card-elevated {
+  @apply bg-slate-900/90 backdrop-blur-2xl border border-slate-700/60 rounded-3xl shadow-2xl transition-all duration-200;
 }
 
-/* Code & Telemetry Styling */
-code, pre, .font-mono {
-  font-family: 'JetBrains Mono', monospace;
-}
-
-/* Subtle Pulsing Rings */
-@keyframes softPulse {
+/* Dynamic Field Change Highlight Animation */
+@keyframes deltaGlow {
   0%, 100% {
-    opacity: 1;
-    transform: scale(1);
+    box-shadow: 0 0 12px 0 rgba(99, 102, 241, 0.2);
   }
   50% {
-    opacity: 0.8;
-    transform: scale(1.02);
+    box-shadow: 0 0 20px 2px rgba(99, 102, 241, 0.4);
   }
 }
 
-.soft-pulse {
-  animation: softPulse 2.5s ease-in-out infinite;
+.delta-highlight {
+  animation: deltaGlow 2s ease-in-out infinite;
+}
+
+/* Monospace text */
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
 }

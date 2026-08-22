@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api } from './api';
 import {
   DisruptionEvent,
@@ -21,6 +21,7 @@ import { SupplyChainExplorer } from './components/SupplyChainExplorer';
 import { AuditLogView } from './components/AuditLogView';
 import { ScenarioSandbox } from './components/ScenarioSandbox';
 import { CustomDisruptionModal } from './components/CustomDisruptionModal';
+import { AddSupplierModal } from './components/AddSupplierModal';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -37,11 +38,28 @@ export function App() {
   const [audits, setAudits] = useState<AuditEvent[]>([]);
   const [agentStatus, setAgentStatus] = useState<AgentStatus | null>(null);
 
+  // Baseline Initial Snapshots for Real-Time Delta Highlighting
+  const [initialInventory, setInitialInventory] = useState<InventoryItem[]>([]);
+  const [initialPurchaseOrders, setInitialPurchaseOrders] = useState<PurchaseOrder[]>([]);
+  const [initialSuppliers, setInitialSuppliers] = useState<Supplier[]>([]);
+  const isInitialSnapshotSet = useRef<boolean>(false);
+
+  // User-added custom suppliers in state
+  const [customSuppliers, setCustomSuppliers] = useState<Supplier[]>(() => {
+    try {
+      const stored = localStorage.getItem('vyapar_custom_suppliers');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [isCustomModalOpen, setIsCustomModalOpen] = useState<boolean>(false);
+  const [isAddSupplierModalOpen, setIsAddSupplierModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Load state from backend
-  const loadData = async () => {
+  const loadData = async (isReset: boolean = false) => {
     try {
       setLoading(true);
       const [disList, invList, supList, poList, prdList, decList, appList, audList] = await Promise.all([
@@ -55,14 +73,28 @@ export function App() {
         api.getAuditLogs(),
       ]);
 
+      // Merge backend suppliers with user-added custom suppliers
+      const mergedSuppliers = [
+        ...supList,
+        ...customSuppliers.filter((c) => !supList.some((s) => s.id === c.id || s.code === c.code)),
+      ];
+
       setDisruptions(disList);
       setInventory(invList);
-      setSuppliers(supList);
+      setSuppliers(mergedSuppliers);
       setPurchaseOrders(poList);
       setProductionOrders(prdList);
       setDecisions(decList);
       setApprovals(appList);
       setAudits(audList);
+
+      // Set initial baseline snapshots on first load or upon reset
+      if (!isInitialSnapshotSet.current || isReset) {
+        setInitialInventory(JSON.parse(JSON.stringify(invList)));
+        setInitialPurchaseOrders(JSON.parse(JSON.stringify(poList)));
+        setInitialSuppliers(JSON.parse(JSON.stringify(mergedSuppliers)));
+        isInitialSnapshotSet.current = true;
+      }
 
       if (disList.length > 0 && !selectedDisruptionId) {
         setSelectedDisruptionId(disList[0].id);
@@ -121,7 +153,9 @@ export function App() {
   const handleResetSimulation = async () => {
     await api.resetSimulation();
     setSelectedDisruptionId(null);
-    await loadData();
+    setCustomSuppliers([]);
+    localStorage.removeItem('vyapar_custom_suppliers');
+    await loadData(true);
   };
 
   const handleTriggerScenario = async (scenario: string) => {
@@ -142,11 +176,22 @@ export function App() {
     setActiveTab('disruptions');
   };
 
+  const handleAddSupplier = (newSupplier: Supplier) => {
+    const updated = [...customSuppliers, newSupplier];
+    setCustomSuppliers(updated);
+    try {
+      localStorage.setItem('vyapar_custom_suppliers', JSON.stringify(updated));
+    } catch (e) {
+      console.warn('Could not save to localStorage', e);
+    }
+    setSuppliers((prev) => [...prev, newSupplier]);
+  };
+
   const activeDisruptionsCount = disruptions.filter((d) => d.status !== 'RESOLVED' && (d.status as string) !== 'COMPLETE').length;
   const pendingApprovalsCount = approvals.filter((a) => a.status === 'PENDING').length;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans antialiased selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#0b0f19] text-slate-100 font-sans antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
       {/* Top Header Navigation */}
       <Navbar
         activeTab={activeTab}
@@ -159,9 +204,9 @@ export function App() {
 
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {loading ? (
+        {loading && !disruptions.length ? (
           <div className="flex items-center justify-center py-24">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" />
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500" />
           </div>
         ) : (
           <>
@@ -206,6 +251,10 @@ export function App() {
                 suppliers={suppliers}
                 purchaseOrders={purchaseOrders}
                 productionOrders={productionOrders}
+                initialInventory={initialInventory}
+                initialPurchaseOrders={initialPurchaseOrders}
+                initialSuppliers={initialSuppliers}
+                onOpenAddSupplierModal={() => setIsAddSupplierModalOpen(true)}
               />
             )}
 
@@ -230,6 +279,14 @@ export function App() {
         purchaseOrders={purchaseOrders}
         inventory={inventory}
         suppliers={suppliers}
+      />
+
+      {/* Add Supplier Modal */}
+      <AddSupplierModal
+        isOpen={isAddSupplierModalOpen}
+        onClose={() => setIsAddSupplierModalOpen(false)}
+        onAddSupplier={handleAddSupplier}
+        existingCount={suppliers.length}
       />
     </div>
   );

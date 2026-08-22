@@ -8,25 +8,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        darkBg: '#08080a',
-        darkCard: 'rgba(20, 20, 25, 0.65)',
-        darkBorder: 'rgba(63, 63, 70, 0.3)',
-        darkBorderHover: 'rgba(249, 115, 22, 0.3)',
-        brandOrange: '#f97316',
-        brandRed: '#ef4444',
-        brandGreen: '#10b981',
-        brandBlue: '#3b82f6',
-        brandMuted: '#71717a',
+        darkBg: '#0b0f19',
+        darkCard: 'rgba(17, 24, 39, 0.75)',
+        darkBorder: 'rgba(51, 65, 85, 0.4)',
+        darkBorderHover: 'rgba(99, 102, 241, 0.4)',
       },
       fontFamily: {
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
-        sans: ['Outfit', 'Inter', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
       },
       boxShadow: {
+        subtle: '0 4px 20px -2px rgba(0, 0, 0, 0.5)',
         glass: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-        glow: '0 0 15px rgba(249, 115, 22, 0.15)',
-        glowGreen: '0 0 15px rgba(16, 185, 129, 0.15)',
-        glowRed: '0 0 15px rgba(239, 68, 68, 0.15)',
+        glow: '0 0 20px -5px rgba(99, 102, 241, 0.25)',
       }
     },
   },
