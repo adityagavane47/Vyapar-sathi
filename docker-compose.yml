@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  federasec-app:
+  vyapar-saathi-app:
     build:
       context: .
       dockerfile: Dockerfile
