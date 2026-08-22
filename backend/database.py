@@ -1,10 +1,16 @@
 import os
+import sys
 import json
 from datetime import datetime, timedelta
 import random
+
+# Ensure root folder is in sys.path when running this script directly
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime, Text, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 DATABASE_URL = "sqlite:///./federasec.db"
 
@@ -316,5 +322,7 @@ def init_db():
     finally:
         db.close()
 
-# Quick fix: correct the timedelta argument in the system metrics generation
-# timedelta(minutes=i*5) instead of timedelta(five_minutes=i*5)
+if __name__ == "__main__":
+    print(f"Initializing and seeding database at {DATABASE_URL}...")
+    init_db()
+    print("Done!")

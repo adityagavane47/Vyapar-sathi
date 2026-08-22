@@ -1,29 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
 
-@import "tailwindcss";
-
-@theme {
-  --color-bgLight: #F7F9FC;
-  --color-cardLight: #FFFFFF;
-  --color-textDark: #14213D;
-  --color-textMuted: #607089;
-  --color-textSubtle: #94A3B8;
-  --color-brandBlue: #2457D6;
-  --color-brandNavy: #173A91;
-  --color-brandGreen: #159A68;
-  --color-brandOrange: #D99520;
-  --color-brandRed: #D94A4A;
-  --color-brandViolet: #7357D9;
-  --color-borderLight: #D9E2EE;
-
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'IBM Plex Mono', monospace;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Base Styles */
 body {
-  @apply bg-bgLight text-textDark font-sans antialiased overflow-x-hidden;
-  background-image: none;
+  @apply bg-slate-50 text-slate-900 font-sans antialiased overflow-x-hidden;
 }
 
 /* Custom Scrollbar */
@@ -32,23 +15,24 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-bgLight;
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 rounded;
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-brandBlue/35;
+  background: #94a3b8;
 }
 
 /* Card baseline style */
 .glass-panel {
-  @apply bg-cardLight border border-borderLight rounded-xl transition-all duration-200;
+  @apply bg-white border border-slate-200 rounded-xl transition-all duration-200;
 }
 
 /* KPI Card semantic hover classes */
 .kpi-card {
-  @apply bg-cardLight border border-borderLight rounded-xl transition-all duration-200;
+  @apply bg-white border border-slate-200 rounded-xl transition-all duration-200;
 }
 
 .kpi-card:hover {
