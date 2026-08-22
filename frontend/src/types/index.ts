@@ -8,7 +8,7 @@ export interface DisruptionEvent {
   affected_entity_id: number;
   description: string;
   evidence: Record<string, any>;
-  status: 'NEW' | 'TRIAGED' | 'INVESTIGATING' | 'IN_PROGRESS' | 'RESOLVED' | 'FAILED';
+  status: 'NEW' | 'TRIAGED' | 'INVESTIGATING' | 'IN_PROGRESS' | 'RESOLVED' | 'FAILED' | 'COMPLETE' | string;
 }
 
 export interface Supplier {
@@ -56,6 +56,8 @@ export interface PurchaseOrder {
   po_number: string;
   supplier_id: number;
   component_id: number;
+  supplier_name?: string;
+  component_name?: string;
   quantity: number;
   unit_price: number;
   total_amount: number;
@@ -133,6 +135,7 @@ export interface HumanApproval {
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
   approver_comments?: string;
   timestamp: string;
+  decided_at?: string;
 }
 
 export interface AuditEvent {
@@ -143,6 +146,7 @@ export interface AuditEvent {
   agent_state: string;
   tool_called?: string;
   tool_input?: Record<string, any>;
+  tool_input_params?: Record<string, any>;
   tool_output?: Record<string, any>;
   calculation_summary?: string;
   decision_summary?: string;

@@ -76,7 +76,7 @@ class AgentReasoningEngine:
 
         elif current_state == "VALIDATE":
             return {
-                "thought": "Enforcing hard business constraints ($50k human approval threshold, MOQ, ISO certs, budget).",
+                "thought": "Enforcing hard business constraints (₹50k human approval threshold, MOQ, ISO certs, budget).",
                 "state_action": "validate_constraints",
                 "recommended_tools": []
             }

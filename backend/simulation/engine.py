@@ -65,7 +65,7 @@ class SimulationEngine:
             return event
 
         elif scenario_name == "supplier_delay_high_cost":
-            # Critical component PO-7003 delayed, large volume requirement exceeding $50k
+            # Critical component PO-7003 delayed, large volume requirement exceeding ₹50k
             po = self.db.query(PurchaseOrder).filter(PurchaseOrder.po_number == "PO-7003").first()
             if po:
                 po.status = "Delayed"
@@ -78,7 +78,7 @@ class SimulationEngine:
                 severity="Critical",
                 affected_entity_type="PurchaseOrder",
                 affected_entity_id=po.id if po else 3,
-                description="Major breakdown at Vanguard Assemblies (SUP-005). Delivery of PO-7003 (Heavy-Duty Power Board PB-800) delayed by 14 days. Recovery requires emergency high-capacity order ($68,000 incremental cost).",
+                description="Major breakdown at Vanguard Assemblies (SUP-005). Delivery of PO-7003 (Heavy-Duty Power Board PB-800) delayed by 14 days. Recovery requires emergency high-capacity order (₹68,000 incremental cost).",
                 evidence={
                     "po_number": "PO-7003",
                     "supplier": "Vanguard Assemblies",

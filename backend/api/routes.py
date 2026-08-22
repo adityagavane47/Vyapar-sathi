@@ -22,9 +22,30 @@ router = APIRouter()
 
 # 1. Events & Disruptions
 @router.post("/events", response_model=DisruptionEventResponse)
+@router.post("/disruptions", response_model=DisruptionEventResponse)
 def create_event(payload: DisruptionEventCreate, db: Session = Depends(get_db)):
     import datetime
-    code = f"DIS-{int(datetime.datetime.utcnow().timestamp())}"
+    code = f"DIS-CUST-{int(datetime.datetime.utcnow().timestamp())}"
+    evidence = payload.evidence or {}
+    
+    # Auto-infer evidence details if not explicitly passed
+    if payload.affected_entity_type == "PurchaseOrder":
+        po = db.query(PurchaseOrder).filter(PurchaseOrder.id == payload.affected_entity_id).first()
+        if po:
+            if "po_number" not in evidence:
+                evidence["po_number"] = po.po_number
+            if "delay_days" not in evidence and "delay" in payload.event_type.lower():
+                evidence["delay_days"] = 7
+            if "affected_component" not in evidence:
+                comp = db.query(Component).filter(Component.id == po.component_id).first()
+                if comp:
+                    evidence["affected_component"] = comp.name
+            # Update PO status if delayed
+            if "delay" in payload.event_type.lower():
+                po.status = "Delayed"
+            elif "quality" in payload.event_type.lower() or "defect" in payload.event_type.lower():
+                po.status = "Quality_Failed"
+
     event = DisruptionEvent(
         event_code=code,
         timestamp=datetime.datetime.utcnow(),
@@ -33,7 +54,7 @@ def create_event(payload: DisruptionEventCreate, db: Session = Depends(get_db)):
         affected_entity_type=payload.affected_entity_type,
         affected_entity_id=payload.affected_entity_id,
         description=payload.description,
-        evidence=payload.evidence,
+        evidence=evidence,
         status="NEW"
     )
     db.add(event)

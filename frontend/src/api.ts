@@ -28,6 +28,18 @@ export const api = {
   // Disruptions
   getDisruptions: () => fetchJson<DisruptionEvent[]>(`${API_BASE}/disruptions`),
   getDisruptionDetail: (id: number) => fetchJson<DisruptionEvent>(`${API_BASE}/disruptions/${id}`),
+  createDisruption: (data: {
+    event_type: string;
+    severity: string;
+    affected_entity_type: string;
+    affected_entity_id: number;
+    description: string;
+    evidence?: Record<string, any>;
+  }) =>
+    fetchJson<DisruptionEvent>(`${API_BASE}/disruptions`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 
   // Supply Chain State
   getInventory: () => fetchJson<InventoryItem[]>(`${API_BASE}/inventory`),

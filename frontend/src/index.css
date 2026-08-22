@@ -1,87 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Base Styles */
+/* Base App Theme */
 body {
-  @apply bg-slate-50 text-slate-900 font-sans antialiased overflow-x-hidden;
+  @apply bg-slate-950 text-slate-100 font-sans antialiased overflow-x-hidden;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-/* Custom Scrollbar */
+/* Custom Sleek Dark Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #020617;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
+  background: #1e293b;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #334155;
 }
 
-/* Card baseline style */
+/* Glassmorphism Surface Tokens */
 .glass-panel {
-  @apply bg-white border border-slate-200 rounded-xl transition-all duration-200;
+  @apply bg-slate-900/80 backdrop-blur-md border border-slate-800/80 rounded-2xl shadow-xl transition-all duration-200;
 }
 
-/* KPI Card semantic hover classes */
-.kpi-card {
-  @apply bg-white border border-slate-200 rounded-xl transition-all duration-200;
+.glass-panel-elevated {
+  @apply bg-slate-900/90 backdrop-blur-lg border border-slate-700/60 rounded-2xl shadow-2xl transition-all duration-200;
 }
 
-.kpi-card:hover {
+/* KPI Card semantic glow effects */
+.kpi-glow {
+  @apply transition-all duration-200;
+}
+.kpi-glow:hover {
   transform: translateY(-2px);
+  box-shadow: 0 12px 24px -6px rgba(99, 102, 241, 0.15);
 }
 
-.kpi-card-blue:hover {
-  border-color: rgba(36, 87, 214, 0.4);
-  box-shadow: 0 8px 24px -4px rgba(36, 87, 214, 0.08);
+/* Code & Telemetry Styling */
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
 }
 
-.kpi-card-violet:hover {
-  border-color: rgba(115, 87, 217, 0.4);
-  box-shadow: 0 8px 24px -4px rgba(115, 87, 217, 0.08);
-}
-
-.kpi-card-green:hover {
-  border-color: rgba(21, 154, 104, 0.4);
-  box-shadow: 0 8px 24px -4px rgba(21, 154, 104, 0.08);
-}
-
-.kpi-card-red:hover {
-  border-color: rgba(217, 74, 74, 0.4);
-  box-shadow: 0 8px 24px -4px rgba(217, 74, 74, 0.08);
-}
-
-.kpi-card-amber:hover {
-  border-color: rgba(217, 149, 32, 0.4);
-  box-shadow: 0 8px 24px -4px rgba(217, 149, 32, 0.08);
-}
-
-/* Simulated terminal blinking cursor */
-.cursor-blink {
-  animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-/* Dotted model update flows */
-@keyframes flowDash {
-  to {
-    stroke-dashoffset: -20;
+/* Subtle Pulsing Rings */
+@keyframes softPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
   }
 }
 
-.flow-line {
-  stroke-dasharray: 6, 4;
-  animation: flowDash 1.5s linear infinite;
+.soft-pulse {
+  animation: softPulse 2.5s ease-in-out infinite;
 }

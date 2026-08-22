@@ -97,7 +97,7 @@ class MultiObjectiveDecisionEngine:
 
         lines = [
             f"RECOMMENDED PLAN: {rec_strategy} via {rec_supplier} (Score: {recommended.get('score', 0)}/100).",
-            f"- Total Cost: ${rec_cost:,.2f} | Delivery Lead Time: {rec_lead} days.",
+            f"- Total Cost: ₹{rec_cost:,.2f} | Delivery Lead Time: {rec_lead} days.",
             f"- Key Advantage: Maintains 100% production continuity while meeting quality certification requirements."
         ]
 
@@ -112,6 +112,6 @@ class MultiObjectiveDecisionEngine:
                 if violations:
                     lines.append(f"  {idx}. {r_strategy} via {r_supplier} [REJECTED - CONSTRAINT VIOLATION]: {', '.join(violations)}")
                 else:
-                    lines.append(f"  {idx}. {r_strategy} via {r_supplier} (Score: {r_score}/100) [REJECTED - LOWER SCORE]: Lower score due to lead time ({r.get('lead_time_days')}d vs {rec_lead}d) or total cost (${r.get('total_cost', 0):,.2f} vs ${rec_cost:,.2f}).")
+                    lines.append(f"  {idx}. {r_strategy} via {r_supplier} (Score: {r_score}/100) [REJECTED - LOWER SCORE]: Lower score due to lead time ({r.get('lead_time_days')}d vs {rec_lead}d) or total cost (₹{r.get('total_cost', 0):,.2f} vs ₹{rec_cost:,.2f}).")
 
         return "\n".join(lines)

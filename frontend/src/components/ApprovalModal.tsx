@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layers, AlertTriangle, CheckCircle2, XCircle, DollarSign, Clock, ShieldAlert } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, XCircle, Clock, ShieldAlert, IndianRupee, FileCheck, Check, Info } from 'lucide-react';
 import { HumanApproval } from '../types';
 
 interface ApprovalModalProps {
@@ -9,88 +9,204 @@ interface ApprovalModalProps {
 }
 
 export const ApprovalModal: React.FC<ApprovalModalProps> = ({ approvals, onApprove, onReject }) => {
-  const pending = approvals.filter((a) => a.status === 'PENDING');
+  const [activeFilter, setActiveFilter] = useState<'PENDING' | 'RESOLVED' | 'ALL'>('PENDING');
   const [comments, setComments] = useState('');
+  const [actionInProgressId, setActionInProgressId] = useState<number | null>(null);
 
-  if (pending.length === 0) {
-    return (
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-8 text-center text-slate-400">
-        <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
-        <h3 className="text-lg font-bold text-white">Zero Pending Human Approvals</h3>
-        <p className="text-xs text-slate-400 mt-1">
-          All recovery decisions within configured policy limits execute autonomously. Escalation triggers only for spend &gt; $50,000 or high risk.
-        </p>
-      </div>
-    );
-  }
+  const pending = approvals.filter((a) => a.status === 'PENDING');
+  const resolved = approvals.filter((a) => a.status !== 'PENDING');
 
-  const current = pending[0];
+  const displayList =
+    activeFilter === 'PENDING' ? pending : activeFilter === 'RESOLVED' ? resolved : approvals;
 
   return (
     <div className="space-y-6">
-      <div className="bg-gradient-to-br from-amber-950/80 via-slate-900 to-slate-900 border-2 border-amber-500/60 rounded-2xl p-6 shadow-2xl space-y-6">
-        {/* Header Banner */}
-        <div className="flex items-start justify-between border-b border-amber-500/30 pb-4">
-          <div className="flex items-center space-x-3">
-            <div className="p-3 bg-amber-500/20 text-amber-400 rounded-xl border border-amber-500/40 animate-pulse">
-              <ShieldAlert className="w-7 h-7" />
-            </div>
-            <div>
-              <span className="text-xs uppercase font-black tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded border border-amber-500/30">
-                HUMAN AUTHORIZATION REQUIRED (&gt; $50k Spend)
-              </span>
-              <h2 className="text-xl font-extrabold text-white mt-1">{current.title}</h2>
-              <p className="text-xs text-slate-300">Escalated by Agent Orchestrator for Manager Approval</p>
-            </div>
-          </div>
-
-          <div className="text-right">
-            <div className="text-2xl font-black text-amber-300">${current.cost_impact?.toLocaleString()}</div>
-            <span className="text-[11px] text-slate-400">Incremental Spend Impact</span>
-          </div>
+      {/* Header & Filter Tabs */}
+      <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-md">
+        <div>
+          <h2 className="text-lg font-black text-white flex items-center space-x-2.5">
+            <ShieldAlert className="w-5 h-5 text-amber-400" />
+            <span>Human-in-the-Loop Governance & Authorization</span>
+          </h2>
+          <p className="text-xs text-slate-400 mt-1">
+            Review decisions exceeding ₹50,000 spend thresholds, critical risk constraints, or certification exceptions.
+          </p>
         </div>
 
-        {/* Action & Risk Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-bold">Recommended Action:</span>
-            <p className="text-sm font-bold text-white">{current.recommended_action}</p>
-          </div>
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-bold">Risk Assessment:</span>
-            <p className="text-xs text-amber-300 font-semibold">{current.description}</p>
-          </div>
-        </div>
-
-        {/* Approver Comments Input */}
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-300">Approver Notes & Comments:</label>
-          <textarea
-            value={comments}
-            onChange={(e) => setComments(e.target.value)}
-            placeholder="Add justification notes for audit log (e.g., Authorized emergency spend for Tier-1 customer order PRD-9003)..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 h-20"
-          />
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center justify-end space-x-4 pt-2 border-t border-slate-800">
+        <div className="flex items-center space-x-2 bg-slate-950 p-1 rounded-xl border border-slate-800 self-start sm:self-auto">
           <button
-            onClick={() => onReject(current.id, comments || 'Rejected by manager')}
-            className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/40 font-bold text-sm transition"
+            onClick={() => setActiveFilter('PENDING')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
+              activeFilter === 'PENDING'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
           >
-            <XCircle className="w-4 h-4" />
-            <span>Reject Plan & Replan</span>
+            <span>Pending</span>
+            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500/30 text-amber-200">
+              {pending.length}
+            </span>
           </button>
+
           <button
-            onClick={() => onApprove(current.id, comments || 'Approved by supply chain manager')}
-            className="flex items-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-sm shadow-xl shadow-emerald-600/30 transition"
+            onClick={() => setActiveFilter('RESOLVED')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+              activeFilter === 'RESOLVED'
+                ? 'bg-indigo-600/30 text-indigo-300 border border-indigo-500/40'
+                : 'text-slate-400 hover:text-white'
+            }`}
           >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Approve & Execute ERP Update</span>
+            Resolved ({resolved.length})
+          </button>
+
+          <button
+            onClick={() => setActiveFilter('ALL')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+              activeFilter === 'ALL'
+                ? 'bg-indigo-600/30 text-indigo-300 border border-indigo-500/40'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            All ({approvals.length})
           </button>
         </div>
       </div>
+
+      {/* Main List */}
+      {displayList.length === 0 ? (
+        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-12 text-center text-slate-400">
+          <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-2 opacity-80" />
+          <h3 className="text-base font-bold text-white">No Pending Escalations</h3>
+          <p className="text-xs text-slate-400 mt-1 max-w-md mx-auto">
+            All current recovery decisions are within automated policy boundaries (spend ≤ ₹50,000). System operating autonomously.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-5">
+          {displayList.map((appr) => {
+            const isPending = appr.status === 'PENDING';
+            return (
+              <div
+                key={appr.id}
+                className={`rounded-2xl p-6 border shadow-2xl space-y-5 transition-all ${
+                  isPending
+                    ? 'bg-gradient-to-br from-amber-950/40 via-slate-900 to-slate-900 border-amber-500/60 ring-1 ring-amber-500/30'
+                    : 'bg-slate-900/90 border-slate-800'
+                }`}
+              >
+                {/* Header Row */}
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 border-b border-slate-800/80 pb-4">
+                  <div className="flex items-start space-x-3.5">
+                    <div
+                      className={`p-3 rounded-xl border shrink-0 ${
+                        isPending
+                          ? 'bg-amber-500/20 text-amber-400 border-amber-500/40 animate-pulse'
+                          : appr.status === 'APPROVED'
+                          ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                          : 'bg-rose-500/20 text-rose-400 border-rose-500/30'
+                      }`}
+                    >
+                      <ShieldAlert className="w-6 h-6" />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center space-x-2 flex-wrap gap-1">
+                        <span
+                          className={`text-[10px] uppercase font-black tracking-wider px-2.5 py-0.5 rounded-full border ${
+                            isPending
+                              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                              : appr.status === 'APPROVED'
+                              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                              : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+                          }`}
+                        >
+                          {appr.status === 'PENDING' ? 'AUTHORIZATION REQUIRED (> ₹50,000 SPEND)' : appr.status}
+                        </span>
+                        <span className="text-xs text-slate-400 font-mono">Disruption #{appr.disruption_id}</span>
+                      </div>
+
+                      <h3 className="text-base sm:text-lg font-black text-white mt-1.5">{appr.title}</h3>
+                      <p className="text-xs text-slate-300 mt-0.5">{appr.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="text-left sm:text-right shrink-0 bg-slate-950/80 p-3 rounded-xl border border-slate-800">
+                    <div className="text-xl font-black text-amber-300 font-mono">
+                      ₹{appr.cost_impact?.toLocaleString('en-IN')}
+                    </div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                      Incremental Spend
+                    </span>
+                  </div>
+                </div>
+
+                {/* Recommended Plan Details */}
+                <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1">
+                  <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">
+                    Agent Recommended Autonomous Plan
+                  </span>
+                  <p className="text-xs font-bold text-white">{appr.recommended_action}</p>
+                </div>
+
+                {/* If Pending: Approver Notes & Decision Actions */}
+                {isPending ? (
+                  <div className="space-y-4 pt-2">
+                    <div className="space-y-1.5">
+                      <label className="text-[11px] font-bold text-slate-300 uppercase tracking-wider">
+                        Approver Justification Notes (Stored in Audit Ledger)
+                      </label>
+                      <textarea
+                        value={comments}
+                        onChange={(e) => setComments(e.target.value)}
+                        placeholder="Add authorization remarks (e.g. Approved emergency expedited freight to protect Tier-1 delivery deadline)..."
+                        className="w-full bg-slate-950 border border-slate-700/80 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 h-20 font-sans leading-relaxed"
+                      />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
+                      <button
+                        onClick={async () => {
+                          setActionInProgressId(appr.id);
+                          await onReject(appr.id, comments || 'Rejected by Manager - Seek Alternate Vendor');
+                          setActionInProgressId(null);
+                        }}
+                        disabled={actionInProgressId === appr.id}
+                        className="w-full sm:w-auto flex items-center justify-center space-x-2 px-5 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold text-xs transition disabled:opacity-50"
+                      >
+                        <XCircle className="w-4 h-4 text-rose-400" />
+                        <span>Reject Plan & Trigger Replanning</span>
+                      </button>
+
+                      <button
+                        onClick={async () => {
+                          setActionInProgressId(appr.id);
+                          await onApprove(appr.id, comments || 'Authorized by Supply Chain Manager');
+                          setActionInProgressId(null);
+                        }}
+                        disabled={actionInProgressId === appr.id}
+                        className="w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-xl shadow-emerald-600/30 transition disabled:opacity-50"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                        <span>Authorize & Execute ERP Update</span>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 text-xs flex items-center justify-between text-slate-400">
+                    <div>
+                      <span className="font-bold text-slate-300">Manager Notes: </span>
+                      <span>{appr.approver_comments || 'No remarks entered.'}</span>
+                    </div>
+                    <span className="text-[11px] font-mono">
+                      {appr.timestamp ? new Date(appr.timestamp).toLocaleString() : ''}
+                    </span>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

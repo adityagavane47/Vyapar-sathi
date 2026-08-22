@@ -20,6 +20,7 @@ import { ApprovalModal } from './components/ApprovalModal';
 import { SupplyChainExplorer } from './components/SupplyChainExplorer';
 import { AuditLogView } from './components/AuditLogView';
 import { ScenarioSandbox } from './components/ScenarioSandbox';
+import { CustomDisruptionModal } from './components/CustomDisruptionModal';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -36,6 +37,7 @@ export function App() {
   const [audits, setAudits] = useState<AuditEvent[]>([]);
   const [agentStatus, setAgentStatus] = useState<AgentStatus | null>(null);
 
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Load state from backend
@@ -131,7 +133,16 @@ export function App() {
     setActiveTab('disruptions');
   };
 
-  const activeDisruptionsCount = disruptions.filter((d) => d.status !== 'RESOLVED').length;
+  const handleCreateCustomDisruption = async (payload: any) => {
+    const created = await api.createDisruption(payload);
+    if (created && created.id) {
+      setSelectedDisruptionId(created.id);
+    }
+    await loadData();
+    setActiveTab('disruptions');
+  };
+
+  const activeDisruptionsCount = disruptions.filter((d) => d.status !== 'RESOLVED' && (d.status as string) !== 'COMPLETE').length;
   const pendingApprovalsCount = approvals.filter((a) => a.status === 'PENDING').length;
 
   return (
@@ -143,13 +154,14 @@ export function App() {
         pendingApprovalsCount={pendingApprovalsCount}
         activeDisruptionsCount={activeDisruptionsCount}
         onResetSimulation={handleResetSimulation}
+        onOpenCustomModal={() => setIsCustomModalOpen(true)}
       />
 
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500" />
+          <div className="flex items-center justify-center py-24">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500" />
           </div>
         ) : (
           <>
@@ -161,6 +173,7 @@ export function App() {
                 approvals={approvals}
                 onSelectDisruption={(id) => setSelectedDisruptionId(id)}
                 onNavigateToTab={(tab) => setActiveTab(tab)}
+                onOpenCustomModal={() => setIsCustomModalOpen(true)}
               />
             )}
 
@@ -173,6 +186,7 @@ export function App() {
                 decisions={decisions}
                 onRunAgent={handleRunAgent}
                 onStepAgent={handleStepAgent}
+                onOpenCustomModal={() => setIsCustomModalOpen(true)}
               />
             )}
 
@@ -201,11 +215,22 @@ export function App() {
               <ScenarioSandbox
                 onTriggerScenario={handleTriggerScenario}
                 onResetSimulation={handleResetSimulation}
+                onOpenCustomModal={() => setIsCustomModalOpen(true)}
               />
             )}
           </>
         )}
       </main>
+
+      {/* Custom Disruption Injection Modal */}
+      <CustomDisruptionModal
+        isOpen={isCustomModalOpen}
+        onClose={() => setIsCustomModalOpen(false)}
+        onSubmit={handleCreateCustomDisruption}
+        purchaseOrders={purchaseOrders}
+        inventory={inventory}
+        suppliers={suppliers}
+      />
     </div>
   );
 }

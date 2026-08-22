@@ -31,7 +31,33 @@ def test_trigger_disruption_api():
     assert run_res.status_code == 200
     assert run_res.json()["final_state"] == "COMPLETE"
 
+def test_create_custom_disruption_api():
+    payload = {
+        "event_type": "supplier_delay",
+        "severity": "High",
+        "affected_entity_type": "PurchaseOrder",
+        "affected_entity_id": 1,
+        "description": "Custom test disruption: TechComponents delay of 8 days",
+        "evidence": {
+            "po_number": "PO-7001",
+            "delay_days": 8,
+            "affected_component": "MCU-32"
+        }
+    }
+    res = client.post("/api/disruptions", json=payload)
+    assert res.status_code == 200
+    data = res.json()
+    assert data["event_code"].startswith("DIS-CUST-")
+    assert data["description"] == payload["description"]
+    assert data["evidence"]["delay_days"] == 8
+
+    # Ensure we can run the agent on the custom disruption
+    run_res = client.post("/api/agent/run", json={"disruption_id": data["id"], "max_steps": 15})
+    assert run_res.status_code == 200
+    assert run_res.json()["final_state"] == "COMPLETE"
+
 def test_audit_log_api():
     res = client.get("/api/audit")
     assert res.status_code == 200
     assert len(res.json()) > 0
+

@@ -11,7 +11,7 @@ class ConstraintValidator:
         return {
             "check": "budget_limit",
             "passed": passed,
-            "details": f"Total cost ${total_cost:,.2f} vs Max budget ${cls.MAX_RECOVERY_BUDGET:,.2f}"
+            "details": f"Total cost ₹{total_cost:,.2f} vs Max budget ₹{cls.MAX_RECOVERY_BUDGET:,.2f}"
         }
 
     @classmethod
@@ -23,7 +23,7 @@ class ConstraintValidator:
             "threshold": cls.HUMAN_APPROVAL_COST_THRESHOLD,
             "incremental_cost": incremental_cost,
             "risk_level": risk_level,
-            "reason": f"Cost impact ${incremental_cost:,.2f} exceeds threshold ${cls.HUMAN_APPROVAL_COST_THRESHOLD:,.2f}" if incremental_cost > cls.HUMAN_APPROVAL_COST_THRESHOLD else f"Risk level {risk_level} demands human oversight."
+            "reason": f"Cost impact ₹{incremental_cost:,.2f} exceeds threshold ₹{cls.HUMAN_APPROVAL_COST_THRESHOLD:,.2f}" if incremental_cost > cls.HUMAN_APPROVAL_COST_THRESHOLD else f"Risk level {risk_level} demands human oversight."
         }
 
     @classmethod
