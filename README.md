@@ -6,6 +6,9 @@
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python)](https://python.org)
 [![TailwindCSS](https://img.shields.io/badge/Styling-Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Render-46E3B7?style=flat&logo=render)](https://vyapar-sathi-zl6e.onrender.com)
+
+> **🌐 Live Deployment:** [https://vyapar-sathi-zl6e.onrender.com](https://vyapar-sathi-zl6e.onrender.com)
 
 **Vyapar Saathi** is an enterprise-grade Autonomous & Human-in-the-Loop AI Agent Controller designed to mitigate real-time supply chain disruptions, optimize procurement decisions, and autonomously orchestrate ERP workflows while strictly adhering to business governance thresholds.
 
