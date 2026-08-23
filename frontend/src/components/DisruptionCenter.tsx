@@ -12,12 +12,8 @@ import {
   PlusCircle,
   Sparkles,
   Activity,
-  FileText,
   Search,
-  Filter,
   Check,
-  Zap,
-  Info
 } from 'lucide-react';
 import { DisruptionEvent, AgentStatus, DecisionRecord } from '../types';
 
@@ -114,23 +110,23 @@ export const DisruptionCenter: React.FC<DisruptionCenterProps> = ({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
       {/* Left Column: Disruption Inbox (4 cols) */}
-      <div className="lg:col-span-4 bg-slate-900/90 border border-slate-800/90 rounded-3xl p-6 shadow-xl space-y-5 backdrop-blur-xl flex flex-col max-h-[820px]">
+      <div className="lg:col-span-4 glass-card-elevated p-6 space-y-5 flex flex-col max-h-[840px]">
         {/* Inbox Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center space-x-2.5">
-            <div className="p-2 rounded-xl bg-rose-500/15 text-rose-400">
+            <div className="p-2 rounded-xl bg-rose-50 text-[#EF4444] border border-rose-200">
               <ShieldAlert className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Disruption Inbox</h3>
-              <p className="text-[11px] text-slate-400">{disruptions.length} Total Incidents Logged</p>
+              <h3 className="text-base font-extrabold text-[#0F172A]">Disruption Inbox</h3>
+              <p className="text-[11px] text-[#475569]">{disruptions.length} Total Incidents Logged</p>
             </div>
           </div>
 
           {onOpenCustomModal && (
             <button
               onClick={onOpenCustomModal}
-              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-xs shadow-md shadow-indigo-600/25 transition"
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#6366F1] to-[#22D3EE] hover:brightness-110 text-white font-bold text-xs shadow-sm transition hover:-translate-y-0.5"
               title="Create a custom disruption event"
             >
               <PlusCircle className="w-3.5 h-3.5" />
@@ -141,15 +137,15 @@ export const DisruptionCenter: React.FC<DisruptionCenterProps> = ({
 
         {/* Filter Pills & Search Box */}
         <div className="space-y-3">
-          <div className="flex items-center space-x-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+          <div className="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
             {(['ALL', 'ACTIVE', 'RESOLVED'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setFilterTab(tab)}
-                className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition text-center ${
+                className={`flex-1 py-1.5 rounded-lg text-xs font-extrabold transition text-center ${
                   filterTab === tab
-                    ? 'bg-indigo-600 text-white shadow'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-white text-[#0F172A] shadow-sm'
+                    : 'text-[#475569] hover:text-[#0F172A]'
                 }`}
               >
                 {tab}
@@ -163,19 +159,19 @@ export const DisruptionCenter: React.FC<DisruptionCenterProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search code, supplier, component..."
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-sans shadow-inner"
+              className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#6366F1] font-sans shadow-2xs"
             />
-            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
           </div>
         </div>
 
         {/* Incident List */}
         <div className="space-y-3 overflow-y-auto flex-1 pr-1">
           {filteredDisruptions.length === 0 ? (
-            <div className="p-8 text-center bg-slate-950/60 rounded-2xl border border-slate-800/80 text-slate-400 text-xs">
-              <Sparkles className="w-6 h-6 text-slate-500 mx-auto mb-2 opacity-60" />
-              <p className="font-bold text-white">No Incidents Found</p>
-              <p className="text-[11px] text-slate-500 mt-1">
+            <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 text-[#475569] text-xs">
+              <Sparkles className="w-6 h-6 text-slate-400 mx-auto mb-2 opacity-60" />
+              <p className="font-bold text-[#0F172A]">No Incidents Found</p>
+              <p className="text-[11px] text-[#64748B] mt-1">
                 {searchQuery ? 'Try modifying your search criteria.' : 'Inject a custom disruption to test recovery.'}
               </p>
             </div>
@@ -189,38 +185,38 @@ export const DisruptionCenter: React.FC<DisruptionCenterProps> = ({
                   onClick={() => onSelectDisruption(d.id)}
                   className={`p-4 rounded-2xl cursor-pointer transition-all border select-none duration-200 ${
                     isSelected
-                      ? 'bg-gradient-to-br from-indigo-950/90 via-slate-900 to-slate-900 border-indigo-500 shadow-xl shadow-indigo-500/20 ring-1 ring-indigo-500/40'
-                      : 'bg-slate-950/70 border-slate-800/80 hover:border-slate-700 hover:bg-slate-900/60'
+                      ? 'bg-indigo-50/90 border-[#6366F1] shadow-md ring-1 ring-[#6366F1]/40'
+                      : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-2xs'
                   }`}
                 >
                   <div className="flex items-center justify-between text-xs">
-                    <span className="font-mono text-slate-400 font-bold">{d.event_code}</span>
+                    <span className="font-mono text-[#6366F1] font-extrabold">{d.event_code}</span>
                     <span
-                      className={`px-2.5 py-0.5 rounded-full font-extrabold uppercase text-[9px] ${
+                      className={`px-2.5 py-0.5 rounded-full font-extrabold uppercase text-[9px] border ${
                         d.severity === 'Critical'
-                          ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                          ? 'bg-[#FEE2E2] text-[#EF4444] border-[#FECACA]'
                           : d.severity === 'High'
-                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                          : 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          ? 'bg-[#FEF3C7] text-[#D97706] border-[#FDE68A]'
+                          : 'bg-[#CFFAFE] text-[#0891B2] border-[#A5F3FC]'
                       }`}
                     >
                       {d.severity}
                     </span>
                   </div>
 
-                  <h4 className="text-xs sm:text-sm font-bold text-white mt-2 line-clamp-2 leading-relaxed">
+                  <h4 className="text-xs sm:text-sm font-extrabold text-[#0F172A] mt-2 line-clamp-2 leading-relaxed">
                     {d.description}
                   </h4>
 
-                  <div className="flex items-center justify-between text-[11px] mt-3 pt-2 border-t border-slate-800/80">
-                    <span className="text-slate-400 capitalize">{d.event_type.replace(/_/g, ' ')}</span>
+                  <div className="flex items-center justify-between text-[11px] mt-3 pt-2 border-t border-slate-100">
+                    <span className="text-[#475569] capitalize font-medium">{d.event_type.replace(/_/g, ' ')}</span>
                     <span
-                      className={`font-mono font-bold ${
+                      className={`font-mono font-extrabold ${
                         isResolved
-                          ? 'text-emerald-400'
+                          ? 'text-[#059669]'
                           : d.status === 'IN_PROGRESS' || (d.status as string) === 'WAITING_FOR_APPROVAL'
-                          ? 'text-amber-400'
-                          : 'text-indigo-400'
+                          ? 'text-[#D97706]'
+                          : 'text-[#6366F1]'
                       }`}
                     >
                       {d.status}
@@ -237,22 +233,22 @@ export const DisruptionCenter: React.FC<DisruptionCenterProps> = ({
       {selectedDisruption ? (
         <div className="lg:col-span-8 space-y-7">
           {/* Header Action Card */}
-          <div className="bg-slate-900/90 border border-slate-800/90 rounded-3xl p-7 shadow-xl space-y-5 backdrop-blur-xl">
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-5 border-b border-slate-800/80 pb-5">
+          <div className="glass-card-elevated p-7 space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-5 border-b border-slate-100 pb-5">
               <div className="space-y-1.5">
                 <div className="flex items-center space-x-3 flex-wrap gap-2">
-                  <span className="font-mono text-xs text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-3 py-0.5 rounded-lg font-bold">
+                  <span className="font-mono text-xs text-[#6366F1] bg-indigo-50 border border-indigo-200 px-3 py-0.5 rounded-lg font-bold">
                     {selectedDisruption.event_code}
                   </span>
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-[#475569]">
                     Detected: {new Date(selectedDisruption.timestamp).toLocaleTimeString('en-IN')}
                   </span>
-                  <span className="text-xs font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                  <span className="text-xs font-mono font-bold text-[#D97706] bg-[#FEF3C7] px-2.5 py-0.5 rounded-full border border-[#FDE68A]">
                     Severity: {selectedDisruption.severity}
                   </span>
                 </div>
 
-                <h2 className="text-lg sm:text-xl font-black text-white leading-snug pt-1">
+                <h2 className="text-lg sm:text-xl font-black text-[#0F172A] leading-snug pt-1">
                   {selectedDisruption.description}
                 </h2>
               </div>
@@ -262,17 +258,17 @@ export const DisruptionCenter: React.FC<DisruptionCenterProps> = ({
                 <button
                   onClick={() => handleStep(selectedDisruption.id)}
                   disabled={isStepping || isRunning || selectedDisruption.status === 'RESOLVED'}
-                  className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs shadow-md transition disabled:opacity-40"
+                  className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-[#0F172A] border border-slate-300 font-extrabold text-xs shadow-sm transition disabled:opacity-40 hover:-translate-y-0.5"
                   title="Execute next single state transition"
                 >
-                  <ArrowRight className="w-4 h-4 text-indigo-400" />
+                  <ArrowRight className="w-4 h-4 text-[#6366F1]" />
                   <span>{isStepping ? 'Stepping...' : 'Step Once'}</span>
                 </button>
 
                 <button
                   onClick={() => handleRun(selectedDisruption.id)}
                   disabled={isRunning || isStepping || selectedDisruption.status === 'RESOLVED'}
-                  className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 via-blue-600 to-emerald-600 hover:from-indigo-500 hover:to-emerald-500 text-white font-extrabold text-xs shadow-xl shadow-indigo-600/30 transition disabled:opacity-40"
+                  className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#6366F1] to-[#22D3EE] hover:brightness-110 text-white font-extrabold text-xs shadow-md shadow-indigo-600/25 transition disabled:opacity-40 hover:-translate-y-0.5"
                   title="Run end-to-end autonomous resolution loop"
                 >
                   <Play className="w-4 h-4" />
@@ -283,11 +279,11 @@ export const DisruptionCenter: React.FC<DisruptionCenterProps> = ({
 
             {/* Evidence Telemetry Card */}
             {selectedDisruption.evidence && (
-              <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 font-mono text-xs space-y-1">
-                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 font-mono text-xs space-y-1">
+                <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider block">
                   Normalized Evidence Telemetry:
                 </span>
-                <pre className="text-indigo-300 whitespace-pre-wrap text-[11px] leading-relaxed">
+                <pre className="text-[#334155] whitespace-pre-wrap text-[11px] leading-relaxed font-mono">
                   {JSON.stringify(selectedDisruption.evidence, null, 2)}
                 </pre>
               </div>
@@ -295,18 +291,20 @@ export const DisruptionCenter: React.FC<DisruptionCenterProps> = ({
           </div>
 
           {/* Interactive 9-Stage State Flowchart */}
-          <div className="bg-slate-900/90 border border-slate-800/90 rounded-3xl p-7 shadow-xl space-y-5 backdrop-blur-xl">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div className="glass-card-elevated p-7 space-y-5">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
-                <h3 className="text-base sm:text-lg font-black text-white flex items-center space-x-2.5">
-                  <Activity className="w-5 h-5 text-indigo-400" />
+                <h3 className="text-base sm:text-lg font-black text-[#0F172A] flex items-center space-x-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center">
+                    <Activity className="w-4 h-4 text-[#6366F1]" />
+                  </div>
                   <span>Agent Decision & Execution State Progression</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-[#475569] mt-0.5">
                   Deterministic transition sequence governed by multi-objective scoring and hard constraint validators.
                 </p>
               </div>
-              <span className="text-xs font-mono font-bold text-indigo-300 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20">
+              <span className="text-xs font-mono font-extrabold text-[#6366F1] bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
                 State: {currentState}
               </span>
             </div>
@@ -314,43 +312,42 @@ export const DisruptionCenter: React.FC<DisruptionCenterProps> = ({
             <div className="space-y-3">
               {timelineStages.map((stg, idx) => {
                 const status = getStageStatus(stg.key);
-                const Icon = stg.icon;
                 return (
                   <div
                     key={stg.key}
                     className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-2xl border transition-all duration-200 gap-3 ${
                       status === 'active'
-                        ? 'bg-gradient-to-r from-indigo-950/80 via-slate-900 to-slate-900 border-indigo-500 text-white shadow-xl shadow-indigo-500/20 ring-1 ring-indigo-500/40'
+                        ? 'bg-indigo-50/90 border-2 border-[#6366F1] shadow-md ring-1 ring-[#6366F1]/30'
                         : status === 'completed'
-                        ? 'bg-slate-950/60 border-slate-800/80 text-slate-300'
-                        : 'bg-slate-950/30 border-slate-900/80 text-slate-600'
+                        ? 'bg-emerald-50/70 border-emerald-200 text-[#0F172A]'
+                        : 'bg-slate-50 border-slate-200/80 text-[#64748B]'
                     }`}
                   >
                     <div className="flex items-start sm:items-center space-x-3.5">
                       <div
-                        className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
+                        className={`w-8 h-8 rounded-xl flex items-center justify-center font-extrabold text-xs shrink-0 ${
                           status === 'active'
-                            ? 'bg-indigo-600 text-white animate-pulse shadow-md shadow-indigo-600/40'
+                            ? 'bg-[#6366F1] text-white animate-pulse shadow-md shadow-indigo-600/40'
                             : status === 'completed'
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            : 'bg-slate-800 text-slate-600'
+                            ? 'bg-[#D1FAE5] text-[#059669] border border-[#A7F3D0]'
+                            : 'bg-slate-200 text-slate-500'
                         }`}
                       >
                         {status === 'completed' ? <Check className="w-4 h-4" /> : idx + 1}
                       </div>
                       <div>
-                        <div className="font-bold text-xs sm:text-sm text-white">{stg.label}</div>
-                        <p className="text-[11px] text-slate-400 mt-0.5">{stg.desc}</p>
+                        <div className="font-extrabold text-xs sm:text-sm text-[#0F172A]">{stg.label}</div>
+                        <p className="text-[11px] text-[#475569] mt-0.5">{stg.desc}</p>
                       </div>
                     </div>
 
                     <span
-                      className={`text-xs font-mono font-bold self-start sm:self-center px-3 py-1 rounded-lg ${
+                      className={`text-xs font-mono font-extrabold self-start sm:self-center px-3 py-1 rounded-full ${
                         status === 'active'
-                          ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
+                          ? 'bg-indigo-100 text-[#6366F1] border border-indigo-300'
                           : status === 'completed'
-                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
-                          : 'bg-slate-900 text-slate-600'
+                          ? 'bg-[#D1FAE5] text-[#059669] border border-[#A7F3D0]'
+                          : 'bg-slate-200 text-[#64748B]'
                       }`}
                     >
                       {status === 'active' ? 'IN PROGRESS' : status === 'completed' ? 'SATISFIED' : 'QUEUED'}
@@ -363,26 +360,26 @@ export const DisruptionCenter: React.FC<DisruptionCenterProps> = ({
 
           {/* Decision Summary Card if Available */}
           {currentDecision && (
-            <div className="bg-slate-900/90 border border-slate-800/90 rounded-3xl p-7 shadow-xl space-y-4 backdrop-blur-xl">
-              <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400">
+            <div className="glass-card-elevated p-7 space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-[#64748B]">
                   Recommended Recovery Strategy (Decision #{currentDecision.id})
                 </h3>
-                <span className="text-xs font-mono text-emerald-400 font-bold">
+                <span className="text-xs font-mono text-[#059669] bg-[#D1FAE5] px-2.5 py-0.5 rounded-full font-extrabold border border-[#A7F3D0]">
                   Score: {currentDecision.score}/100
                 </span>
               </div>
-              <p className="text-base font-black text-emerald-400">{currentDecision.recommendation_summary}</p>
-              <div className="p-4 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs text-slate-200 leading-relaxed whitespace-pre-wrap font-sans">
+              <p className="text-base font-black text-[#059669]">{currentDecision.recommendation_summary}</p>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-[#334155] leading-relaxed whitespace-pre-wrap font-sans">
                 {currentDecision.reasoning}
               </div>
             </div>
           )}
         </div>
       ) : (
-        <div className="lg:col-span-8 bg-slate-900/60 border border-slate-800 rounded-3xl p-16 text-center text-slate-400">
-          <p className="font-semibold text-white">Select a disruption from the inbox</p>
-          <p className="text-xs text-slate-500 mt-1">Or click "+ Custom" to create a new incident</p>
+        <div className="lg:col-span-8 glass-card p-16 text-center text-[#475569]">
+          <p className="font-bold text-[#0F172A]">Select a disruption from the inbox</p>
+          <p className="text-xs text-[#64748B] mt-1">Or click "+ Custom" to create a new incident</p>
         </div>
       )}
     </div>

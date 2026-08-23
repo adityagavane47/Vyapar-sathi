@@ -3,13 +3,6 @@ import {
   Cpu,
   Terminal,
   Database,
-  CheckCircle2,
-  ShieldAlert,
-  Sparkles,
-  Activity,
-  Layers,
-  Search,
-  Code,
   Copy,
   Check
 } from 'lucide-react';
@@ -47,22 +40,22 @@ export const AgentVisualizer: React.FC<AgentVisualizerProps> = ({ agentStatus })
   return (
     <div className="space-y-8">
       {/* 1. State Machine Graphic Visualizer */}
-      <div className="bg-slate-900/90 border border-slate-800/90 rounded-3xl p-8 shadow-2xl space-y-6 backdrop-blur-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-5">
+      <div className="glass-card-elevated p-8 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-5">
           <div className="space-y-1">
-            <h3 className="text-xl font-black text-white flex items-center space-x-3">
-              <div className="p-2 rounded-xl bg-indigo-500/15 text-indigo-400">
+            <h3 className="text-xl font-black text-[#0F172A] flex items-center space-x-3">
+              <div className="p-2 rounded-xl bg-indigo-50 text-[#6366F1]">
                 <Cpu className="w-6 h-6" />
               </div>
               <span>Agent State Machine Architecture & Transitions</span>
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#475569]">
               Autonomous state cycle orchestrating supply chain investigation, constraint validation, and ERP transactions.
             </p>
           </div>
 
-          <span className="text-xs text-slate-400 font-mono bg-slate-950 px-3.5 py-1.5 rounded-xl border border-slate-800 self-start sm:self-auto">
-            Transitions Executed: <strong className="font-bold text-indigo-300">{agentStatus?.step_count || 0}</strong>
+          <span className="text-xs text-[#475569] font-mono bg-slate-50 px-3.5 py-1.5 rounded-xl border border-slate-200 self-start sm:self-auto font-medium">
+            Transitions Executed: <strong className="font-extrabold text-[#6366F1]">{agentStatus?.step_count || 0}</strong>
           </span>
         </div>
 
@@ -73,22 +66,22 @@ export const AgentVisualizer: React.FC<AgentVisualizerProps> = ({ agentStatus })
             return (
               <div
                 key={s.key}
-                className={`p-4 rounded-2xl border text-center transition-all duration-200 flex flex-col justify-between ${
+                className={`p-4 rounded-2xl border text-center transition-all duration-200 flex flex-col justify-between hover:-translate-y-0.5 ${
                   isCurrent
-                    ? 'bg-gradient-to-br from-indigo-900/95 via-indigo-950 to-slate-900 border-indigo-400 text-white shadow-2xl shadow-indigo-500/25 ring-2 ring-indigo-500/60 scale-105'
-                    : 'bg-slate-950/70 border-slate-800/80 text-slate-400'
+                    ? 'bg-indigo-50/90 border-2 border-[#6366F1] text-[#0F172A] shadow-md ring-1 ring-[#6366F1]/30 scale-105'
+                    : 'bg-white border-slate-200 text-[#475569]'
                 }`}
               >
                 <div>
-                  <div className="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider mb-1">
+                  <div className="text-[10px] font-extrabold uppercase text-[#64748B] tracking-wider mb-1">
                     {s.title}
                   </div>
-                  <div className="text-xs font-black tracking-tight">{s.key}</div>
-                  <p className="text-[10px] text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">{s.desc}</p>
+                  <div className="text-xs font-black text-[#0F172A] tracking-tight">{s.key}</div>
+                  <p className="text-[10px] text-[#475569] mt-1.5 line-clamp-2 leading-relaxed">{s.desc}</p>
                 </div>
 
                 {isCurrent && (
-                  <span className="mt-3 inline-block text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-emerald-500 text-slate-950 animate-pulse">
+                  <span className="mt-3 inline-block text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-[#10B981] text-white shadow-xs">
                     CURRENT STATE
                   </span>
                 )}
@@ -101,44 +94,46 @@ export const AgentVisualizer: React.FC<AgentVisualizerProps> = ({ agentStatus })
       {/* 2. Tool Trace & Memory Context Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Real-time Tool Call Trace */}
-        <div className="bg-slate-900/90 border border-slate-800/90 rounded-3xl p-8 shadow-2xl space-y-5 backdrop-blur-xl flex flex-col">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
-            <h3 className="text-base font-black text-white flex items-center space-x-2.5">
-              <Terminal className="w-5 h-5 text-emerald-400" />
+        <div className="glass-card-elevated p-8 space-y-5 flex flex-col">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <h3 className="text-base font-extrabold text-[#0F172A] flex items-center space-x-2.5">
+              <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <Terminal className="w-4 h-4 text-[#059669]" />
+              </div>
               <span>Tool Call Execution Trace ({toolsCalled.length})</span>
             </h3>
-            <span className="text-xs font-mono text-emerald-400">Dynamic Tool Dispatch</span>
+            <span className="text-xs font-mono text-[#059669] font-bold">Dynamic Tool Dispatch</span>
           </div>
 
           <div className="space-y-3.5 max-h-[480px] overflow-y-auto pr-1 flex-1">
             {toolsCalled.length === 0 ? (
-              <div className="p-12 text-center text-slate-500 italic text-xs bg-slate-950/60 rounded-2xl border border-slate-800">
+              <div className="p-12 text-center text-[#64748B] italic text-xs bg-slate-50 rounded-2xl border border-slate-200">
                 No tool executions recorded in the active session. Run the agent on an active disruption to view execution trace.
               </div>
             ) : (
               toolsCalled.map((t: any, idx: number) => (
                 <div
                   key={idx}
-                  className="p-5 rounded-2xl bg-slate-950/80 border border-slate-800/90 space-y-2.5 text-xs shadow-md"
+                  className="p-5 rounded-2xl bg-white border border-slate-200 space-y-2.5 text-xs shadow-sm hover:-translate-y-0.5 transition-transform"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-mono font-bold text-emerald-400 text-xs bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                    <span className="font-mono font-bold text-[#059669] text-xs bg-[#D1FAE5] px-2.5 py-1 rounded-lg border border-[#A7F3D0]">
                       {t.tool}()
                     </span>
-                    <span className="text-[10px] text-slate-400 font-mono">
+                    <span className="text-[10px] text-[#64748B] font-mono">
                       {new Date(t.timestamp).toLocaleTimeString('en-IN')}
                     </span>
                   </div>
 
-                  <div className="text-[11px] text-slate-300 font-mono bg-slate-900/90 p-3 rounded-xl border border-slate-800 overflow-x-auto">
-                    <span className="text-slate-500 font-bold block mb-1 text-[10px] uppercase tracking-wider">
+                  <div className="text-[11px] text-[#334155] font-mono bg-slate-50 p-3 rounded-xl border border-slate-200 overflow-x-auto">
+                    <span className="text-[#64748B] font-bold block mb-1 text-[10px] uppercase tracking-wider">
                       Input Arguments:
                     </span>
                     {JSON.stringify(t.args, null, 2)}
                   </div>
 
-                  <div className="text-[11px] text-slate-300 font-mono bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/60 leading-relaxed">
-                    <span className="text-indigo-400 font-bold">Outcome: </span>
+                  <div className="text-[11px] text-[#334155] font-mono bg-slate-50/70 p-2.5 rounded-xl border border-slate-200 leading-relaxed">
+                    <span className="text-[#6366F1] font-bold">Outcome: </span>
                     {t.result_summary}
                   </div>
                 </div>
@@ -148,20 +143,22 @@ export const AgentVisualizer: React.FC<AgentVisualizerProps> = ({ agentStatus })
         </div>
 
         {/* Working Memory Context Inspector */}
-        <div className="bg-slate-900/90 border border-slate-800/90 rounded-3xl p-8 shadow-2xl space-y-5 backdrop-blur-xl flex flex-col">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
-            <h3 className="text-base font-black text-white flex items-center space-x-2.5">
-              <Database className="w-5 h-5 text-indigo-400" />
+        <div className="glass-card-elevated p-8 space-y-5 flex flex-col">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <h3 className="text-base font-extrabold text-[#0F172A] flex items-center space-x-2.5">
+              <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
+                <Database className="w-4 h-4 text-[#6366F1]" />
+              </div>
               <span>Working Memory Blackboard</span>
             </h3>
             <button
               onClick={handleCopyMemory}
-              className="flex items-center space-x-1.5 text-xs text-indigo-400 hover:text-indigo-300 bg-slate-950 px-3 py-1 rounded-xl border border-slate-800 transition"
+              className="flex items-center space-x-1.5 text-xs text-[#6366F1] hover:text-[#4F46E5] bg-indigo-50 px-3 py-1 rounded-xl border border-indigo-200 transition font-bold"
             >
               {copiedMemory ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                  <span className="text-emerald-400 font-bold">Copied!</span>
+                  <Check className="w-3.5 h-3.5 text-[#059669]" />
+                  <span className="text-[#059669]">Copied!</span>
                 </>
               ) : (
                 <>
@@ -172,7 +169,7 @@ export const AgentVisualizer: React.FC<AgentVisualizerProps> = ({ agentStatus })
             </button>
           </div>
 
-          <div className="p-5 rounded-2xl bg-slate-950/90 border border-slate-800 font-mono text-xs text-indigo-300 max-h-[480px] overflow-y-auto shadow-inner flex-1 leading-relaxed">
+          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 font-mono text-xs text-[#334155] max-h-[480px] overflow-y-auto shadow-2xs flex-1 leading-relaxed">
             <pre className="whitespace-pre-wrap">{JSON.stringify(agentStatus?.memory_context || {}, null, 2)}</pre>
           </div>
         </div>

@@ -10,6 +10,9 @@ import {
   HumanApproval,
   AuditEvent,
   AgentStatus,
+  ExternalSignals,
+  SupplierRiskPrediction,
+  ProactiveScanResult,
 } from './types';
 import { Navbar } from './components/Navbar';
 import { OverviewDashboard } from './components/OverviewDashboard';
@@ -24,7 +27,9 @@ import { CustomDisruptionModal } from './components/CustomDisruptionModal';
 import { AddSupplierModal } from './components/AddSupplierModal';
 import { CreatePurchaseOrderModal } from './components/CreatePurchaseOrderModal';
 import { PredictiveForecastingView } from './components/PredictiveForecastingView';
-import { ExternalSignals, SupplierRiskPrediction, ProactiveScanResult } from './types';
+import { DynamicLiquidBackground, LiquidTheme, isThemeLight } from './components/DynamicLiquidBackground';
+import { LiquidGlassOverlay } from './components/LiquidGlassOverlay';
+import { LiquidGlassControls, LiquidGlassSettings } from './components/LiquidGlassControls';
 
 export function App() {
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -76,6 +81,26 @@ export function App() {
   const [isAddSupplierModalOpen, setIsAddSupplierModalOpen] = useState<boolean>(false);
   const [isCreatePoModalOpen, setIsCreatePoModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Dynamic Liquid Glass Background & Shader Settings
+  const [liquidSettings, setLiquidSettings] = useState<LiquidGlassSettings>(() => {
+    try {
+      const stored = localStorage.getItem('vyapar_liquid_settings');
+      if (stored) return JSON.parse(stored);
+    } catch {
+      // ignore
+    }
+    return {
+      theme: 'opal-pearl' as LiquidTheme,
+      interactive: true,
+      rippleIntensity: 1.0,
+      speed: 1.0,
+      blurLevel: 'medium' as const,
+      showCaustics: true,
+      mouseSpotlight: true,
+      reactiveDisruptions: true,
+    };
+  });
 
   // Load state from backend
   const loadData = async (isReset: boolean = false) => {
@@ -240,125 +265,180 @@ export function App() {
   const pendingApprovalsCount = approvals.filter((a) => a.status === 'PENDING').length;
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-slate-100 font-sans antialiased selection:bg-indigo-500/30 selection:text-indigo-200">
-      {/* Top Header Navigation */}
-      <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        pendingApprovalsCount={pendingApprovalsCount}
+    <div
+      data-glass-blur={liquidSettings.blurLevel}
+      className="relative min-h-screen text-slate-800 font-sans antialiased selection:bg-indigo-500/20 selection:text-indigo-800"
+    >
+      {/* Dynamic Reactive Fluid Background Canvas */}
+      <DynamicLiquidBackground
+        theme={liquidSettings.theme}
+        interactive={liquidSettings.interactive}
+        rippleIntensity={liquidSettings.rippleIntensity}
+        speed={liquidSettings.speed}
+        disruptionCount={liquidSettings.reactiveDisruptions ? activeDisruptionsCount : 0}
+        glassBlurLevel={liquidSettings.blurLevel}
+      />
+
+      {/* Optical Liquid Glass Overlay & Refraction Shaders */}
+      <LiquidGlassOverlay
+        theme={liquidSettings.theme}
+        blurLevel={liquidSettings.blurLevel}
+        showCaustics={liquidSettings.showCaustics}
+        mouseSpotlight={liquidSettings.mouseSpotlight}
+      />
+
+      {/* Main Application Container */}
+      <div className="relative z-10">
+        {/* Top Header Navigation */}
+        <Navbar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          pendingApprovalsCount={pendingApprovalsCount}
+          activeDisruptionsCount={activeDisruptionsCount}
+          onResetSimulation={handleResetSimulation}
+          onOpenCustomModal={() => setIsCustomModalOpen(true)}
+          theme={liquidSettings.theme}
+          onToggleTheme={() => {
+            setLiquidSettings((prev) => {
+              const isLight = isThemeLight(prev.theme);
+              const nextTheme: LiquidTheme = isLight ? 'cyber-aurora' : 'opal-pearl';
+              const updated = { ...prev, theme: nextTheme };
+              try {
+                localStorage.setItem('vyapar_liquid_settings', JSON.stringify(updated));
+              } catch {
+                // ignore
+              }
+              return updated;
+            });
+          }}
+        />
+
+        {/* Main Content Area with Smooth Page Transition Animations */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {loading && !disruptions.length ? (
+            <div className="flex items-center justify-center py-24">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500" />
+            </div>
+          ) : (
+            <div key={activeTab} className="animate-page-enter">
+              {activeTab === 'overview' && (
+                <OverviewDashboard
+                  disruptions={disruptions}
+                  inventory={inventory}
+                  suppliers={suppliers}
+                  approvals={approvals}
+                  onSelectDisruption={(id) => setSelectedDisruptionId(id)}
+                  onNavigateToTab={(tab) => setActiveTab(tab)}
+                  onOpenCustomModal={() => setIsCustomModalOpen(true)}
+                />
+              )}
+
+              {activeTab === 'predictive' && (
+                <PredictiveForecastingView
+                  externalSignals={externalSignals}
+                  riskPredictions={riskPredictions}
+                  onRunProactiveScan={handleRunProactiveScan}
+                  onSelectDisruption={(id) => setSelectedDisruptionId(id)}
+                  onNavigateToTab={(tab) => setActiveTab(tab)}
+                  proactiveScanResult={proactiveScanResult}
+                />
+              )}
+
+              {activeTab === 'disruptions' && (
+                <DisruptionCenter
+                  disruptions={disruptions}
+                  selectedDisruptionId={selectedDisruptionId}
+                  onSelectDisruption={(id) => setSelectedDisruptionId(id)}
+                  agentStatus={agentStatus}
+                  decisions={decisions}
+                  onRunAgent={handleRunAgent}
+                  onStepAgent={handleStepAgent}
+                  onOpenCustomModal={() => setIsCustomModalOpen(true)}
+                />
+              )}
+
+              {activeTab === 'agent' && <AgentVisualizer agentStatus={agentStatus} />}
+
+              {activeTab === 'approvals' && (
+                <ApprovalModal
+                  approvals={approvals}
+                  onApprove={handleApproveDecision}
+                  onReject={handleRejectDecision}
+                />
+              )}
+
+              {activeTab === 'explorer' && (
+                <SupplyChainExplorer
+                  inventory={inventory}
+                  suppliers={suppliers}
+                  purchaseOrders={purchaseOrders}
+                  productionOrders={productionOrders}
+                  initialInventory={initialInventory}
+                  initialPurchaseOrders={initialPurchaseOrders}
+                  initialSuppliers={initialSuppliers}
+                  onOpenAddSupplierModal={() => setIsAddSupplierModalOpen(true)}
+                  onOpenCreatePoModal={() => setIsCreatePoModalOpen(true)}
+                />
+              )}
+
+              {activeTab === 'audit' && <AuditLogView audits={audits} />}
+
+              {activeTab === 'sandbox' && (
+                <ScenarioSandbox
+                  onTriggerScenario={handleTriggerScenario}
+                  onResetSimulation={handleResetSimulation}
+                  onOpenCustomModal={() => setIsCustomModalOpen(true)}
+                />
+              )}
+            </div>
+          )}
+        </main>
+
+        {/* Custom Disruption Injection Modal */}
+        <CustomDisruptionModal
+          isOpen={isCustomModalOpen}
+          onClose={() => setIsCustomModalOpen(false)}
+          onSubmit={handleCreateCustomDisruption}
+          purchaseOrders={purchaseOrders}
+          inventory={inventory}
+          suppliers={suppliers}
+        />
+
+        {/* Add Supplier Modal */}
+        <AddSupplierModal
+          isOpen={isAddSupplierModalOpen}
+          onClose={() => setIsAddSupplierModalOpen(false)}
+          onAddSupplier={handleAddSupplier}
+          existingCount={suppliers.length}
+        />
+
+        {/* Create Purchase Order Modal with AI Supplier Matching */}
+        <CreatePurchaseOrderModal
+          isOpen={isCreatePoModalOpen}
+          onClose={() => setIsCreatePoModalOpen(false)}
+          onCreatePo={handleCreatePurchaseOrder}
+          suppliers={suppliers}
+          inventory={inventory}
+          productionOrders={productionOrders}
+          existingPoCount={purchaseOrders.length}
+        />
+      </div>
+
+      {/* Interactive Liquid Glass Floating Environment Controller */}
+      <LiquidGlassControls
+        settings={liquidSettings}
+        onChangeSettings={(newSettings) => {
+          setLiquidSettings((prev) => {
+            const updated = { ...prev, ...newSettings };
+            try {
+              localStorage.setItem('vyapar_liquid_settings', JSON.stringify(updated));
+            } catch {
+              // ignore
+            }
+            return updated;
+          });
+        }}
         activeDisruptionsCount={activeDisruptionsCount}
-        onResetSimulation={handleResetSimulation}
-        onOpenCustomModal={() => setIsCustomModalOpen(true)}
-      />
-
-      {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {loading && !disruptions.length ? (
-          <div className="flex items-center justify-center py-24">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-500" />
-          </div>
-        ) : (
-          <>
-            {activeTab === 'overview' && (
-              <OverviewDashboard
-                disruptions={disruptions}
-                inventory={inventory}
-                suppliers={suppliers}
-                approvals={approvals}
-                onSelectDisruption={(id) => setSelectedDisruptionId(id)}
-                onNavigateToTab={(tab) => setActiveTab(tab)}
-                onOpenCustomModal={() => setIsCustomModalOpen(true)}
-              />
-            )}
-
-            {activeTab === 'predictive' && (
-              <PredictiveForecastingView
-                externalSignals={externalSignals}
-                riskPredictions={riskPredictions}
-                onRunProactiveScan={handleRunProactiveScan}
-                onSelectDisruption={(id) => setSelectedDisruptionId(id)}
-                onNavigateToTab={(tab) => setActiveTab(tab)}
-                proactiveScanResult={proactiveScanResult}
-              />
-            )}
-
-            {activeTab === 'disruptions' && (
-              <DisruptionCenter
-                disruptions={disruptions}
-                selectedDisruptionId={selectedDisruptionId}
-                onSelectDisruption={(id) => setSelectedDisruptionId(id)}
-                agentStatus={agentStatus}
-                decisions={decisions}
-                onRunAgent={handleRunAgent}
-                onStepAgent={handleStepAgent}
-                onOpenCustomModal={() => setIsCustomModalOpen(true)}
-              />
-            )}
-
-            {activeTab === 'agent' && <AgentVisualizer agentStatus={agentStatus} />}
-
-            {activeTab === 'approvals' && (
-              <ApprovalModal
-                approvals={approvals}
-                onApprove={handleApproveDecision}
-                onReject={handleRejectDecision}
-              />
-            )}
-
-            {activeTab === 'explorer' && (
-              <SupplyChainExplorer
-                inventory={inventory}
-                suppliers={suppliers}
-                purchaseOrders={purchaseOrders}
-                productionOrders={productionOrders}
-                initialInventory={initialInventory}
-                initialPurchaseOrders={initialPurchaseOrders}
-                initialSuppliers={initialSuppliers}
-                onOpenAddSupplierModal={() => setIsAddSupplierModalOpen(true)}
-                onOpenCreatePoModal={() => setIsCreatePoModalOpen(true)}
-              />
-            )}
-
-            {activeTab === 'audit' && <AuditLogView audits={audits} />}
-
-            {activeTab === 'sandbox' && (
-              <ScenarioSandbox
-                onTriggerScenario={handleTriggerScenario}
-                onResetSimulation={handleResetSimulation}
-                onOpenCustomModal={() => setIsCustomModalOpen(true)}
-              />
-            )}
-          </>
-        )}
-      </main>
-
-      {/* Custom Disruption Injection Modal */}
-      <CustomDisruptionModal
-        isOpen={isCustomModalOpen}
-        onClose={() => setIsCustomModalOpen(false)}
-        onSubmit={handleCreateCustomDisruption}
-        purchaseOrders={purchaseOrders}
-        inventory={inventory}
-        suppliers={suppliers}
-      />
-
-      {/* Add Supplier Modal */}
-      <AddSupplierModal
-        isOpen={isAddSupplierModalOpen}
-        onClose={() => setIsAddSupplierModalOpen(false)}
-        onAddSupplier={handleAddSupplier}
-        existingCount={suppliers.length}
-      />
-
-      {/* Create Purchase Order Modal with AI Supplier Matching */}
-      <CreatePurchaseOrderModal
-        isOpen={isCreatePoModalOpen}
-        onClose={() => setIsCreatePoModalOpen(false)}
-        onCreatePo={handleCreatePurchaseOrder}
-        suppliers={suppliers}
-        inventory={inventory}
-        productionOrders={productionOrders}
-        existingPoCount={purchaseOrders.length}
       />
     </div>
   );

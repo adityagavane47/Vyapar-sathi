@@ -4,19 +4,12 @@ import {
   Truck,
   Factory,
   Users,
-  IndianRupee,
-  ShieldCheck,
-  CheckCircle2,
   AlertTriangle,
   Search,
   Check,
-  Building2,
   Plus,
   ArrowUp,
-  ArrowDown,
   Sparkles,
-  Layers,
-  SlidersHorizontal,
   Eye,
   FilePlus2
 } from 'lucide-react';
@@ -55,8 +48,7 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
   const getComponentName = (componentId?: number) =>
     inventory.find((i) => i.component_id === componentId)?.component_name || 'Component';
 
-  // --- Dynamic Delta Calculations ---
-  // Inventory Deltas
+  // Dynamic Delta Calculations
   const getInventoryDelta = (item: InventoryItem) => {
     const baseline = initialInventory.find((b) => b.inventory_id === item.inventory_id);
     if (!baseline) return null;
@@ -66,7 +58,6 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
     return { allocatedDiff, qtyDiff, isChanged, baseline };
   };
 
-  // PO Deltas
   const getPoDelta = (po: PurchaseOrder) => {
     const baseline = initialPurchaseOrders.find((b) => b.id === po.id || b.po_number === po.po_number);
     const isNew = !baseline;
@@ -75,19 +66,16 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
     return { isNew, statusChanged, baseline, isChanged };
   };
 
-  // Supplier Deltas
   const getSupplierDelta = (s: Supplier) => {
     const isNew = !initialSuppliers.some((b) => b.id === s.id || b.code === s.code);
     return { isNew, isChanged: isNew };
   };
 
-  // Count total dynamic modifications
   const changedInventoryCount = inventory.filter((i) => getInventoryDelta(i)?.isChanged).length;
   const changedPosCount = purchaseOrders.filter((p) => getPoDelta(p)?.isChanged).length;
   const changedSuppliersCount = suppliers.filter((s) => getSupplierDelta(s)?.isChanged).length;
   const totalModifications = changedInventoryCount + changedPosCount + changedSuppliersCount;
 
-  // Filtered lists
   const filteredInventory = inventory.filter((i) => {
     const matchesSearch =
       i.component_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -129,21 +117,21 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
     <div className="space-y-6">
       {/* 1. Dynamic Twin Changes & Delta Telemetry Banner */}
       {totalModifications > 0 && (
-        <div className="bg-slate-900/90 border border-indigo-500/40 rounded-3xl p-6 shadow-xl backdrop-blur-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden">
+        <div className="glass-card-elevated p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative overflow-hidden border-2 border-indigo-200">
           <div className="flex items-start sm:items-center space-x-3.5">
-            <div className="p-3 rounded-2xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 shrink-0">
+            <div className="p-3 rounded-2xl bg-indigo-50 text-[#6366F1] border border-indigo-200 shrink-0">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center space-x-2 flex-wrap gap-1">
-                <span className="font-black text-sm text-white">
+                <span className="font-extrabold text-sm text-[#0F172A]">
                   Real-Time Twin Modifications Detected ({totalModifications})
                 </span>
-                <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-indigo-100 text-[#6366F1] font-bold border border-indigo-200">
                   Live Delta Tracking
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-[#475569] mt-0.5">
                 Highlights show dynamic allocations, status updates, or new POs generated during disruption mitigation compared to baseline.
               </p>
             </div>
@@ -154,8 +142,8 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
               onClick={() => setShowChangedOnly(!showChangedOnly)}
               className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
                 showChangedOnly
-                  ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30'
-                  : 'bg-slate-950/80 text-slate-300 border-slate-800 hover:text-white'
+                  ? 'bg-[#6366F1] text-white border-[#6366F1] shadow-md shadow-indigo-600/30'
+                  : 'bg-white text-[#0F172A] border-slate-300 hover:bg-slate-50'
               }`}
             >
               <Eye className="w-3.5 h-3.5" />
@@ -166,20 +154,20 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
       )}
 
       {/* 2. Subnav Navigation Pills & Action Bar */}
-      <div className="bg-slate-900/80 border border-slate-800/80 rounded-3xl p-5 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 backdrop-blur-xl">
+      <div className="glass-card p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSubTab('inventory')}
             className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               subTab === 'inventory'
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                ? 'bg-gradient-to-r from-[#6366F1] to-[#22D3EE] text-white shadow-md shadow-indigo-500/25'
+                : 'text-[#475569] hover:text-[#0F172A] hover:bg-slate-100'
             }`}
           >
             <Package className="w-3.5 h-3.5" />
             <span>Inventory ({inventory.length})</span>
             {changedInventoryCount > 0 && (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 font-extrabold">
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#FEF3C7] text-[#D97706] font-extrabold">
                 {changedInventoryCount}Δ
               </span>
             )}
@@ -189,14 +177,14 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
             onClick={() => setSubTab('suppliers')}
             className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               subTab === 'suppliers'
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                ? 'bg-gradient-to-r from-[#6366F1] to-[#22D3EE] text-white shadow-md shadow-indigo-500/25'
+                : 'text-[#475569] hover:text-[#0F172A] hover:bg-slate-100'
             }`}
           >
             <Users className="w-3.5 h-3.5" />
             <span>Tier-1 Suppliers ({suppliers.length})</span>
             {changedSuppliersCount > 0 && (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500 text-slate-950 font-extrabold">
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#D1FAE5] text-[#059669] font-extrabold">
                 +{changedSuppliersCount}
               </span>
             )}
@@ -206,14 +194,14 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
             onClick={() => setSubTab('pos')}
             className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               subTab === 'pos'
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                ? 'bg-gradient-to-r from-[#6366F1] to-[#22D3EE] text-white shadow-md shadow-indigo-500/25'
+                : 'text-[#475569] hover:text-[#0F172A] hover:bg-slate-100'
             }`}
           >
             <Truck className="w-3.5 h-3.5" />
             <span>Purchase Orders ({purchaseOrders.length})</span>
             {changedPosCount > 0 && (
-              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500 text-slate-950 font-extrabold">
+              <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-[#FEF3C7] text-[#D97706] font-extrabold">
                 {changedPosCount}Δ
               </span>
             )}
@@ -223,8 +211,8 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
             onClick={() => setSubTab('production')}
             className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               subTab === 'production'
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/25'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                ? 'bg-gradient-to-r from-[#6366F1] to-[#22D3EE] text-white shadow-md shadow-indigo-500/25'
+                : 'text-[#475569] hover:text-[#0F172A] hover:bg-slate-100'
             }`}
           >
             <Factory className="w-3.5 h-3.5" />
@@ -237,7 +225,7 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
           {subTab === 'suppliers' && onOpenAddSupplierModal && (
             <button
               onClick={onOpenAddSupplierModal}
-              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-md shadow-indigo-600/30 transition shrink-0"
+              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#6366F1] to-[#22D3EE] hover:brightness-110 text-white shadow-md shadow-indigo-600/25 transition hover:-translate-y-0.5 shrink-0"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>+ Add Supplier</span>
@@ -247,7 +235,7 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
           {subTab === 'pos' && onOpenCreatePoModal && (
             <button
               onClick={onOpenCreatePoModal}
-              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-md shadow-indigo-600/30 transition shrink-0"
+              className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-[#6366F1] to-[#22D3EE] hover:brightness-110 text-white shadow-md shadow-indigo-600/25 transition hover:-translate-y-0.5 shrink-0"
             >
               <FilePlus2 className="w-3.5 h-3.5" />
               <span>+ Create PO</span>
@@ -260,33 +248,33 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search Twin records..."
-              className="bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-full sm:w-60 shadow-inner"
+              className="bg-white border border-slate-300 rounded-xl pl-9 pr-3 py-1.5 text-xs text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-[#6366F1] w-full sm:w-60 shadow-2xs"
             />
-            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2" />
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2" />
           </div>
         </div>
       </div>
 
       {/* 3. Main Data Tables with Delta Indicators */}
-      <div className="bg-slate-900/80 border border-slate-800/80 rounded-3xl p-7 shadow-2xl backdrop-blur-xl">
+      <div className="glass-card-elevated p-7">
         {/* 1. Inventory View */}
         {subTab === 'inventory' && (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="text-slate-400 uppercase bg-slate-800/40 border-b border-slate-800 text-[10px] tracking-wider font-mono">
+            <table className="w-full text-left text-xs text-[#475569]">
+              <thead className="text-[#64748B] uppercase bg-slate-50 border-b border-slate-200 text-[10px] tracking-wider font-mono">
                 <tr>
-                  <th className="py-3.5 px-4">Component SKU & Name</th>
-                  <th className="py-3.5 px-4">Warehouse Facility</th>
-                  <th className="py-3.5 px-4">Physical Stock</th>
-                  <th className="py-3.5 px-4">Allocated (Live Delta)</th>
-                  <th className="py-3.5 px-4">Safety Buffer</th>
-                  <th className="py-3.5 px-4">Inventory Health Status</th>
+                  <th className="py-3.5 px-4 font-bold">Component SKU & Name</th>
+                  <th className="py-3.5 px-4 font-bold">Warehouse Facility</th>
+                  <th className="py-3.5 px-4 font-bold">Physical Stock</th>
+                  <th className="py-3.5 px-4 font-bold">Allocated (Live Delta)</th>
+                  <th className="py-3.5 px-4 font-bold">Safety Buffer</th>
+                  <th className="py-3.5 px-4 font-bold">Inventory Health Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 font-sans">
+              <tbody className="divide-y divide-slate-100 font-sans">
                 {filteredInventory.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-500">
+                    <td colSpan={6} className="py-12 text-center text-[#64748B]">
                       No inventory records found matching current criteria.
                     </td>
                   </tr>
@@ -296,45 +284,45 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
                     return (
                       <tr
                         key={item.inventory_id}
-                        className={`hover:bg-slate-800/30 transition ${
-                          delta?.isChanged ? 'bg-indigo-950/20' : ''
+                        className={`hover:bg-slate-50 transition ${
+                          delta?.isChanged ? 'bg-indigo-50/50' : ''
                         }`}
                       >
-                        <td className="py-4 px-4 font-semibold text-white">
+                        <td className="py-4 px-4 font-bold text-[#0F172A]">
                           <div className="flex items-center space-x-2">
-                            <span className="font-bold text-sm">{item.component_name}</span>
+                            <span className="font-extrabold text-sm">{item.component_name}</span>
                             {delta?.isChanged && (
-                              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A]">
                                 MODIFIED
                               </span>
                             )}
                           </div>
-                          <span className="text-[10px] text-indigo-400 font-mono">({item.component_code})</span>
+                          <span className="text-[10px] text-[#6366F1] font-mono">({item.component_code})</span>
                         </td>
-                        <td className="py-4 px-4 text-slate-300">{item.warehouse_name}</td>
-                        <td className="py-4 px-4 font-bold text-white font-mono">
-                          {item.quantity} <span className="text-[10px] text-slate-400 font-normal">units</span>
+                        <td className="py-4 px-4 text-[#475569] font-medium">{item.warehouse_name}</td>
+                        <td className="py-4 px-4 font-extrabold text-[#0F172A] font-mono">
+                          {item.quantity} <span className="text-[#64748B] text-[10px] font-normal">units</span>
                         </td>
                         <td className="py-4 px-4 font-mono">
                           <div className="flex items-center space-x-2">
-                            <span className="font-bold text-white">{item.allocated_quantity} units</span>
+                            <span className="font-extrabold text-[#0F172A]">{item.allocated_quantity} units</span>
                             {delta && delta.allocatedDiff > 0 && (
-                              <span className="text-[10px] text-amber-400 font-bold bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 flex items-center space-x-0.5">
+                              <span className="text-[10px] text-[#D97706] font-extrabold bg-[#FEF3C7] px-2 py-0.5 rounded-full border border-[#FDE68A] flex items-center space-x-0.5">
                                 <ArrowUp className="w-3 h-3" />
                                 <span>+{delta.allocatedDiff}</span>
                               </span>
                             )}
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-slate-400 font-mono">{item.safety_stock_level} units</td>
+                        <td className="py-4 px-4 text-[#475569] font-mono font-medium">{item.safety_stock_level} units</td>
                         <td className="py-4 px-4">
                           {item.is_below_safety_stock ? (
-                            <span className="px-3 py-1 rounded-full text-[10px] font-extrabold bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center w-fit space-x-1.5">
+                            <span className="px-3 py-1 rounded-full text-[10px] font-extrabold bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A] flex items-center w-fit space-x-1.5">
                               <AlertTriangle className="w-3.5 h-3.5" />
                               <span>BELOW BUFFER</span>
                             </span>
                           ) : (
-                            <span className="px-3 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center w-fit space-x-1.5">
+                            <span className="px-3 py-1 rounded-full text-[10px] font-extrabold bg-[#D1FAE5] text-[#059669] border border-[#A7F3D0] flex items-center w-fit space-x-1.5">
                               <Check className="w-3.5 h-3.5" />
                               <span>OPTIMAL</span>
                             </span>
@@ -352,14 +340,14 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
         {/* 2. Suppliers Directory */}
         {subTab === 'suppliers' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <span className="text-xs text-[#475569] font-bold">
                 Registered Tier-1 Supplier Catalog ({filteredSuppliers.length} Vendors)
               </span>
               {onOpenAddSupplierModal && (
                 <button
                   onClick={onOpenAddSupplierModal}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 font-bold flex items-center space-x-1"
+                  className="text-xs text-[#6366F1] hover:text-[#4F46E5] font-extrabold flex items-center space-x-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add New Supplier</span>
@@ -373,40 +361,40 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
                 return (
                   <div
                     key={s.id}
-                    className={`p-6 rounded-3xl border transition-all flex flex-col justify-between space-y-4 shadow-xl ${
+                    className={`p-6 rounded-3xl border transition-all flex flex-col justify-between space-y-4 shadow-sm hover:-translate-y-0.5 ${
                       delta.isNew
-                        ? 'bg-gradient-to-br from-indigo-950/70 via-slate-900 to-slate-900 border-indigo-500 shadow-indigo-500/15 ring-1 ring-indigo-500/40'
-                        : 'bg-slate-950/60 border-slate-800/80 hover:border-slate-700'
+                        ? 'bg-indigo-50/70 border-[#6366F1] shadow-md ring-1 ring-[#6366F1]/30'
+                        : 'bg-white border-slate-200 hover:border-slate-300'
                     }`}
                   >
                     <div className="space-y-1.5">
                       <div className="flex justify-between items-start">
                         <div>
                           <div className="flex items-center space-x-2">
-                            <span className="font-bold text-white text-base">{s.name}</span>
+                            <span className="font-extrabold text-[#0F172A] text-base">{s.name}</span>
                             {delta.isNew && (
-                              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-extrabold bg-[#D1FAE5] text-[#059669] border border-[#A7F3D0]">
                                 NEW
                               </span>
                             )}
                           </div>
-                          <span className="text-[10px] text-slate-400 font-mono">{s.code}</span>
+                          <span className="text-[10px] text-[#64748B] font-mono">{s.code}</span>
                         </div>
-                        <span className="px-2.5 py-1 rounded-xl text-xs font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 font-bold">
+                        <span className="px-2.5 py-1 rounded-xl text-xs font-mono text-[#059669] bg-[#D1FAE5] border border-[#A7F3D0] font-extrabold">
                           {s.reliability_score}% Rel.
                         </span>
                       </div>
-                      <p className="text-xs text-slate-400">{s.contact_email}</p>
+                      <p className="text-xs text-[#475569]">{s.contact_email}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-800/80 text-xs">
+                    <div className="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100 text-xs">
                       <div>
-                        <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Lead Time</span>
-                        <p className="font-bold text-white mt-0.5">{s.lead_time_days} Days</p>
+                        <span className="text-[10px] text-[#64748B] uppercase font-bold tracking-wider">Lead Time</span>
+                        <p className="font-extrabold text-[#0F172A] mt-0.5">{s.lead_time_days} Days</p>
                       </div>
                       <div>
-                        <span className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Weekly Output</span>
-                        <p className="font-bold text-white mt-0.5">{s.max_capacity?.toLocaleString()} Units</p>
+                        <span className="text-[10px] text-[#64748B] uppercase font-bold tracking-wider">Weekly Output</span>
+                        <p className="font-extrabold text-[#0F172A] mt-0.5">{s.max_capacity?.toLocaleString()} Units</p>
                       </div>
                     </div>
 
@@ -414,7 +402,7 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
                       {s.certifications?.map((c) => (
                         <span
                           key={c}
-                          className="text-[9px] font-bold uppercase px-2.5 py-0.5 rounded-md bg-indigo-500/15 text-indigo-300 border border-indigo-500/25"
+                          className="text-[9px] font-extrabold uppercase px-2.5 py-0.5 rounded-md bg-indigo-50 text-[#6366F1] border border-indigo-200"
                         >
                           {c}
                         </span>
@@ -430,14 +418,14 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
         {/* 3. Purchase Orders */}
         {subTab === 'pos' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <span className="text-xs text-[#475569] font-bold">
                 ERP Purchase Order Ledger ({filteredPos.length} Active Orders)
               </span>
               {onOpenCreatePoModal && (
                 <button
                   onClick={onOpenCreatePoModal}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 font-bold flex items-center space-x-1"
+                  className="text-xs text-[#6366F1] hover:text-[#4F46E5] font-extrabold flex items-center space-x-1"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>+ Create Purchase Order</span>
@@ -446,63 +434,63 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="text-slate-400 uppercase bg-slate-800/40 border-b border-slate-800 text-[10px] tracking-wider font-mono">
+              <table className="w-full text-left text-xs text-[#475569]">
+                <thead className="text-[#64748B] uppercase bg-slate-50 border-b border-slate-200 text-[10px] tracking-wider font-mono">
                   <tr>
-                    <th className="py-3.5 px-4">PO Code</th>
-                    <th className="py-3.5 px-4">Component SKU & Supplier</th>
-                    <th className="py-3.5 px-4">Order Quantity</th>
-                    <th className="py-3.5 px-4">Total Amount (INR)</th>
-                    <th className="py-3.5 px-4">Expected Delivery</th>
-                    <th className="py-3.5 px-4">ERP Order Status</th>
+                    <th className="py-3.5 px-4 font-bold">PO Code</th>
+                    <th className="py-3.5 px-4 font-bold">Component SKU & Supplier</th>
+                    <th className="py-3.5 px-4 font-bold">Order Quantity</th>
+                    <th className="py-3.5 px-4 font-bold">Total Amount (INR)</th>
+                    <th className="py-3.5 px-4 font-bold">Expected Delivery</th>
+                    <th className="py-3.5 px-4 font-bold">ERP Order Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-sans">
+                <tbody className="divide-y divide-slate-100 font-sans">
                   {filteredPos.map((po) => {
                     const delta = getPoDelta(po);
                     return (
                       <tr
                         key={po.id}
-                        className={`hover:bg-slate-800/30 transition ${
-                          delta.isChanged ? 'bg-indigo-950/20' : ''
+                        className={`hover:bg-slate-50 transition ${
+                          delta.isChanged ? 'bg-indigo-50/50' : ''
                         }`}
                       >
-                        <td className="py-4 px-4 font-mono font-bold text-indigo-400">
+                        <td className="py-4 px-4 font-mono font-bold text-[#6366F1]">
                           <div className="flex items-center space-x-2">
                             <span>{po.po_number}</span>
                             {delta.isNew && (
-                              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                              <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-extrabold bg-[#D1FAE5] text-[#059669] border border-[#A7F3D0]">
                                 NEW (Added)
                               </span>
                             )}
                           </div>
                         </td>
                         <td className="py-4 px-4">
-                          <div className="font-bold text-white text-sm">{getComponentName(po.component_id)}</div>
-                          <div className="text-xs text-slate-400">{getSupplierName(po.supplier_id)}</div>
+                          <div className="font-bold text-[#0F172A] text-sm">{getComponentName(po.component_id)}</div>
+                          <div className="text-xs text-[#64748B]">{getSupplierName(po.supplier_id)}</div>
                         </td>
-                        <td className="py-4 px-4 text-white font-bold font-mono">{po.quantity?.toLocaleString()} units</td>
-                        <td className="py-4 px-4 text-white font-bold font-mono">
+                        <td className="py-4 px-4 text-[#0F172A] font-extrabold font-mono">{po.quantity?.toLocaleString()} units</td>
+                        <td className="py-4 px-4 text-[#0F172A] font-extrabold font-mono">
                           ₹{po.total_amount?.toLocaleString('en-IN')}
                         </td>
-                        <td className="py-4 px-4 text-slate-400 font-mono">
+                        <td className="py-4 px-4 text-[#475569] font-mono">
                           {new Date(po.expected_delivery_date).toLocaleDateString('en-IN')}
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-2">
                             <span
-                              className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${
+                              className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase ${
                                 po.status === 'Delayed'
-                                  ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30 animate-pulse'
+                                  ? 'bg-[#FEE2E2] text-[#EF4444] border border-[#FECACA]'
                                   : po.status === 'Quality_Failed'
-                                  ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                                  : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                  ? 'bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A]'
+                                  : 'bg-[#D1FAE5] text-[#059669] border border-[#A7F3D0]'
                               }`}
                             >
                               {po.status}
                             </span>
                             {delta.statusChanged && delta.baseline && (
-                              <span className="text-[10px] text-rose-400 font-mono">
+                              <span className="text-[10px] text-[#EF4444] font-mono">
                                 (was {delta.baseline.status})
                               </span>
                             )}
@@ -520,30 +508,30 @@ export const SupplyChainExplorer: React.FC<SupplyChainExplorerProps> = ({
         {/* 4. Production Orders */}
         {subTab === 'production' && (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs text-slate-300">
-              <thead className="text-slate-400 uppercase bg-slate-800/40 border-b border-slate-800 text-[10px] tracking-wider font-mono">
+            <table className="w-full text-left text-xs text-[#475569]">
+              <thead className="text-[#64748B] uppercase bg-slate-50 border-b border-slate-200 text-[10px] tracking-wider font-mono">
                 <tr>
-                  <th className="py-3.5 px-4">Production Order</th>
-                  <th className="py-3.5 px-4">Finished Product</th>
-                  <th className="py-3.5 px-4">Customer Account</th>
-                  <th className="py-3.5 px-4">Priority Class</th>
-                  <th className="py-3.5 px-4">Volume</th>
-                  <th className="py-3.5 px-4">Assembly Due Date</th>
+                  <th className="py-3.5 px-4 font-bold">Production Order</th>
+                  <th className="py-3.5 px-4 font-bold">Finished Product</th>
+                  <th className="py-3.5 px-4 font-bold">Customer Account</th>
+                  <th className="py-3.5 px-4 font-bold">Priority Class</th>
+                  <th className="py-3.5 px-4 font-bold">Volume</th>
+                  <th className="py-3.5 px-4 font-bold">Assembly Due Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 font-sans">
+              <tbody className="divide-y divide-slate-100 font-sans">
                 {filteredProduction.map((prd) => (
-                  <tr key={prd.id} className="hover:bg-slate-800/30 transition">
-                    <td className="py-4 px-4 font-mono font-bold text-indigo-400">{prd.order_number}</td>
-                    <td className="py-4 px-4 font-bold text-white text-sm">{prd.product_name}</td>
-                    <td className="py-4 px-4 text-slate-300">{prd.customer_name}</td>
+                  <tr key={prd.id} className="hover:bg-slate-50 transition">
+                    <td className="py-4 px-4 font-mono font-bold text-[#6366F1]">{prd.order_number}</td>
+                    <td className="py-4 px-4 font-extrabold text-[#0F172A] text-sm">{prd.product_name}</td>
+                    <td className="py-4 px-4 text-[#475569] font-medium">{prd.customer_name}</td>
                     <td className="py-4 px-4">
-                      <span className="px-2.5 py-0.5 rounded-full font-bold text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                      <span className="px-2.5 py-0.5 rounded-full font-extrabold text-[10px] bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A]">
                         {prd.customer_priority}
                       </span>
                     </td>
-                    <td className="py-4 px-4 font-bold text-white font-mono">{prd.quantity} units</td>
-                    <td className="py-4 px-4 text-slate-400 font-mono">
+                    <td className="py-4 px-4 font-extrabold text-[#0F172A] font-mono">{prd.quantity} units</td>
+                    <td className="py-4 px-4 text-[#475569] font-mono">
                       {new Date(prd.due_date).toLocaleDateString('en-IN')}
                     </td>
                   </tr>

@@ -4,15 +4,10 @@ import {
   Clock,
   ShieldCheck,
   IndianRupee,
-  AlertTriangle,
   XCircle,
-  CheckCircle2,
   TrendingUp,
   Sparkles,
   Layers,
-  ChevronRight,
-  ShieldAlert,
-  Percent
 } from 'lucide-react';
 import { DecisionRecord, CandidateOption } from '../types';
 
@@ -28,10 +23,10 @@ export const DecisionComparator: React.FC<DecisionComparatorProps> = ({ decision
 
   if (!currentDecision) {
     return (
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-16 text-center text-slate-400">
-        <Sparkles className="w-10 h-10 text-indigo-400 mx-auto mb-3 opacity-60" />
-        <h3 className="text-base font-bold text-white">No Decision Evaluations Recorded</h3>
-        <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+      <div className="glass-card p-16 text-center text-[#475569]">
+        <Sparkles className="w-10 h-10 text-[#6366F1] mx-auto mb-3 opacity-60" />
+        <h3 className="text-base font-extrabold text-[#0F172A]">No Decision Evaluations Recorded</h3>
+        <p className="text-xs text-[#64748B] mt-1 max-w-md mx-auto">
           Execute the autonomous agent on an active disruption to compute candidate procurement solutions and multi-objective Pareto trade-offs.
         </p>
       </div>
@@ -44,33 +39,33 @@ export const DecisionComparator: React.FC<DecisionComparatorProps> = ({ decision
   return (
     <div className="space-y-8">
       {/* 1. Header Card with Optimization Rationale */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950/50 to-slate-900 border border-slate-800/90 rounded-3xl p-8 shadow-2xl space-y-5 backdrop-blur-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
+      <div className="glass-card-elevated p-8 space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div className="flex items-center space-x-3">
-            <span className="text-xs uppercase tracking-wider font-extrabold px-3.5 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 flex items-center space-x-1.5">
-              <TrendingUp className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="text-xs uppercase tracking-wider font-extrabold px-3.5 py-1 rounded-full bg-indigo-50 text-[#6366F1] border border-indigo-200 flex items-center space-x-1.5">
+              <TrendingUp className="w-3.5 h-3.5 text-[#6366F1]" />
               <span>Multi-Objective Pareto Decision Matrix</span>
             </span>
-            <span className="text-xs text-slate-400 font-mono bg-slate-950 px-3 py-1 rounded-xl border border-slate-800">
+            <span className="text-xs text-[#475569] font-mono bg-slate-50 px-3 py-1 rounded-xl border border-slate-200">
               Decision #{currentDecision.id}
             </span>
           </div>
 
-          <span className="text-xs font-mono text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 self-start sm:self-auto">
+          <span className="text-xs font-mono text-[#059669] font-extrabold bg-[#D1FAE5] px-3.5 py-1 rounded-full border border-[#A7F3D0] self-start sm:self-auto shadow-2xs">
             Optimal Score: {currentDecision.score} / 100
           </span>
         </div>
 
         <div>
-          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
+          <h2 className="text-xl sm:text-2xl font-black text-[#0F172A] tracking-tight leading-snug">
             {currentDecision.recommendation_summary}
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#475569] mt-1">
             Automated ranking balancing production continuity, delivery lead time, incremental spend, and vendor compliance.
           </p>
         </div>
 
-        <div className="bg-slate-950/90 p-5 rounded-2xl border border-slate-800/80 text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed font-sans shadow-inner">
+        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-xs sm:text-sm text-[#334155] whitespace-pre-wrap leading-relaxed font-sans shadow-2xs">
           {currentDecision.reasoning}
         </div>
       </div>
@@ -78,11 +73,13 @@ export const DecisionComparator: React.FC<DecisionComparatorProps> = ({ decision
       {/* 2. Evaluated Candidate Solutions Cards Grid */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-            <Layers className="w-5 h-5 text-indigo-400" />
+          <h3 className="text-base font-extrabold text-[#0F172A] uppercase tracking-wider flex items-center space-x-2">
+            <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
+              <Layers className="w-4 h-4 text-[#6366F1]" />
+            </div>
             <span>Ranked Candidate Options ({options.length})</span>
           </h3>
-          <span className="text-xs text-slate-400">Sorted by Pareto Score (Descending)</span>
+          <span className="text-xs text-[#64748B]">Sorted by Pareto Score (Descending)</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -92,47 +89,47 @@ export const DecisionComparator: React.FC<DecisionComparatorProps> = ({ decision
             return (
               <div
                 key={opt.option_id || idx}
-                className={`rounded-3xl p-7 border space-y-5 shadow-2xl relative transition-all duration-200 flex flex-col justify-between ${
+                className={`rounded-3xl p-7 border space-y-5 shadow-sm relative transition-all duration-200 flex flex-col justify-between hover:-translate-y-1 ${
                   isRecommended
-                    ? 'bg-gradient-to-b from-indigo-950/90 via-slate-900 to-slate-900 border-indigo-500 shadow-indigo-500/15 ring-2 ring-indigo-500/40'
-                    : 'bg-slate-900/90 border-slate-800/90 hover:border-slate-700'
+                    ? 'bg-indigo-50/80 border-2 border-[#6366F1] shadow-lg ring-1 ring-[#6366F1]/30'
+                    : 'bg-white border-slate-200 hover:border-slate-300'
                 }`}
               >
                 {isRecommended && (
-                  <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-extrabold text-[10px] uppercase tracking-wider px-3.5 py-1 rounded-full shadow-lg flex items-center space-x-1.5 border border-indigo-400/30">
-                    <Award className="w-3.5 h-3.5 text-amber-300" />
+                  <div className="absolute -top-3.5 right-6 bg-gradient-to-r from-[#6366F1] to-[#22D3EE] text-white font-extrabold text-[10px] uppercase tracking-wider px-3.5 py-1 rounded-full shadow-md flex items-center space-x-1.5">
+                    <Award className="w-3.5 h-3.5 text-white" />
                     <span>Recommended Strategy</span>
                   </div>
                 )}
 
                 <div className="space-y-1.5">
-                  <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 inline-block">
+                  <span className="text-[10px] font-mono font-bold text-[#64748B] bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 inline-block">
                     {opt.option_id}
                   </span>
-                  <h4 className="text-base font-black text-white pt-1">{opt.strategy}</h4>
-                  <p className="text-xs text-indigo-300 font-bold">{opt.supplier_name || 'Vendor'}</p>
+                  <h4 className="text-base font-black text-[#0F172A] pt-1">{opt.strategy}</h4>
+                  <p className="text-xs text-[#6366F1] font-bold">{opt.supplier_name || 'Vendor'}</p>
                 </div>
 
                 {/* Pareto Score Meter */}
-                <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-2xs space-y-2">
                   <div className="flex items-baseline justify-between">
                     <div>
-                      <span className="text-3xl font-black text-white font-mono">{score}</span>
-                      <span className="text-xs text-slate-400 ml-1">/ 100</span>
+                      <span className="text-3xl font-black text-[#0F172A] font-mono">{score}</span>
+                      <span className="text-xs text-[#64748B] ml-1">/ 100</span>
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                    <span className="text-[10px] font-extrabold text-[#059669] uppercase tracking-wider">
                       Pareto Score
                     </span>
                   </div>
 
-                  <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
                         score >= 85
-                          ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
+                          ? 'bg-gradient-to-r from-[#10B981] to-[#22D3EE]'
                           : score >= 70
-                          ? 'bg-gradient-to-r from-indigo-500 to-blue-400'
-                          : 'bg-gradient-to-r from-amber-500 to-rose-400'
+                          ? 'bg-gradient-to-r from-[#6366F1] to-[#22D3EE]'
+                          : 'bg-gradient-to-r from-[#F59E0B] to-[#EF4444]'
                       }`}
                       style={{ width: `${Math.min(100, score)}%` }}
                     />
@@ -143,73 +140,73 @@ export const DecisionComparator: React.FC<DecisionComparatorProps> = ({ decision
                 {opt.score_breakdown && (
                   <div className="space-y-3 pt-2 text-xs">
                     <div>
-                      <div className="flex justify-between text-slate-300 text-[11px] mb-1">
+                      <div className="flex justify-between text-[#475569] text-[11px] mb-1 font-medium">
                         <span>Production Continuity (35%)</span>
-                        <span className="font-bold text-emerald-400">{opt.score_breakdown.continuity} / 35</span>
+                        <span className="font-bold text-[#059669]">{opt.score_breakdown.continuity} / 35</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-emerald-500 h-full" style={{ width: `${(opt.score_breakdown.continuity / 35) * 100}%` }} />
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-[#10B981] h-full" style={{ width: `${(opt.score_breakdown.continuity / 35) * 100}%` }} />
                       </div>
                     </div>
 
                     <div>
-                      <div className="flex justify-between text-slate-300 text-[11px] mb-1">
+                      <div className="flex justify-between text-[#475569] text-[11px] mb-1 font-medium">
                         <span>Lead Time Speed (25%)</span>
-                        <span className="font-bold text-indigo-400">{opt.score_breakdown.lead_time} / 25</span>
+                        <span className="font-bold text-[#6366F1]">{opt.score_breakdown.lead_time} / 25</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-indigo-500 h-full" style={{ width: `${(opt.score_breakdown.lead_time / 25) * 100}%` }} />
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-[#6366F1] h-full" style={{ width: `${(opt.score_breakdown.lead_time / 25) * 100}%` }} />
                       </div>
                     </div>
 
                     <div>
-                      <div className="flex justify-between text-slate-300 text-[11px] mb-1">
+                      <div className="flex justify-between text-[#475569] text-[11px] mb-1 font-medium">
                         <span>Cost Efficiency (20%)</span>
-                        <span className="font-bold text-amber-400">{opt.score_breakdown.cost} / 20</span>
+                        <span className="font-bold text-[#D97706]">{opt.score_breakdown.cost} / 20</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-amber-500 h-full" style={{ width: `${(opt.score_breakdown.cost / 20) * 100}%` }} />
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-[#F59E0B] h-full" style={{ width: `${(opt.score_breakdown.cost / 20) * 100}%` }} />
                       </div>
                     </div>
 
                     <div>
-                      <div className="flex justify-between text-slate-300 text-[11px] mb-1">
+                      <div className="flex justify-between text-[#475569] text-[11px] mb-1 font-medium">
                         <span>Quality & ISO (20%)</span>
-                        <span className="font-bold text-blue-400">{opt.score_breakdown.quality} / 20</span>
+                        <span className="font-bold text-[#0891B2]">{opt.score_breakdown.quality} / 20</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-blue-500 h-full" style={{ width: `${(opt.score_breakdown.quality / 20) * 100}%` }} />
+                      <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-[#22D3EE] h-full" style={{ width: `${(opt.score_breakdown.quality / 20) * 100}%` }} />
                       </div>
                     </div>
                   </div>
                 )}
 
                 {/* Key Metrics in INR */}
-                <div className="space-y-2.5 pt-4 border-t border-slate-800/80 text-xs">
-                  <div className="flex items-center justify-between text-slate-300">
-                    <span className="flex items-center space-x-1.5 text-slate-400">
-                      <IndianRupee className="w-3.5 h-3.5 text-slate-400" />
+                <div className="space-y-2.5 pt-4 border-t border-slate-100 text-xs">
+                  <div className="flex items-center justify-between text-[#475569]">
+                    <span className="flex items-center space-x-1.5 text-[#64748B]">
+                      <IndianRupee className="w-3.5 h-3.5 text-[#64748B]" />
                       <span>Total Procurement:</span>
                     </span>
-                    <span className="font-bold text-white font-mono">
+                    <span className="font-extrabold text-[#0F172A] font-mono">
                       ₹{opt.total_cost?.toLocaleString('en-IN')}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-slate-300">
-                    <span className="flex items-center space-x-1.5 text-slate-400">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="flex items-center justify-between text-[#475569]">
+                    <span className="flex items-center space-x-1.5 text-[#64748B]">
+                      <Clock className="w-3.5 h-3.5 text-[#64748B]" />
                       <span>Lead Time:</span>
                     </span>
-                    <span className="font-bold text-white">{opt.lead_time_days} Days</span>
+                    <span className="font-extrabold text-[#0F172A]">{opt.lead_time_days} Days</span>
                   </div>
 
-                  <div className="flex items-center justify-between text-slate-300">
-                    <span className="flex items-center space-x-1.5 text-slate-400">
-                      <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="flex items-center justify-between text-[#475569]">
+                    <span className="flex items-center space-x-1.5 text-[#64748B]">
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#64748B]" />
                       <span>Supplier Reliability:</span>
                     </span>
-                    <span className="font-bold text-emerald-400">{opt.reliability_score}%</span>
+                    <span className="font-extrabold text-[#059669]">{opt.reliability_score}%</span>
                   </div>
                 </div>
               </div>
@@ -220,13 +217,15 @@ export const DecisionComparator: React.FC<DecisionComparatorProps> = ({ decision
 
       {/* 3. Rejected Alternatives & Trade-Off Explanations */}
       {rejected.length > 0 && (
-        <div className="bg-slate-900/90 border border-slate-800/90 rounded-3xl p-8 shadow-xl space-y-5 backdrop-blur-xl">
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
-            <h3 className="text-base font-bold text-white flex items-center space-x-2.5">
-              <XCircle className="w-5 h-5 text-rose-400" />
+        <div className="glass-card-elevated p-8 space-y-5">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <h3 className="text-base font-extrabold text-[#0F172A] flex items-center space-x-2.5">
+              <div className="w-7 h-7 rounded-lg bg-rose-50 flex items-center justify-center">
+                <XCircle className="w-4 h-4 text-[#EF4444]" />
+              </div>
               <span>Rejected Alternatives & Trade-Off Justification ({rejected.length})</span>
             </h3>
-            <span className="text-xs text-slate-400">Explainable AI Audit Log</span>
+            <span className="text-xs text-[#64748B]">Explainable AI Audit Log</span>
           </div>
 
           <div className="space-y-3.5">
@@ -235,30 +234,30 @@ export const DecisionComparator: React.FC<DecisionComparatorProps> = ({ decision
               return (
                 <div
                   key={idx}
-                  className="p-5 rounded-2xl bg-slate-950/70 border border-slate-800/90 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs"
+                  className="p-5 rounded-2xl bg-white border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs shadow-2xs hover:-translate-y-0.5 transition-transform"
                 >
                   <div className="space-y-1.5">
                     <div className="flex items-center space-x-2.5 flex-wrap gap-1">
-                      <span className="font-black text-white text-sm">{r.strategy}</span>
-                      <span className="text-slate-400">({r.supplier_name})</span>
+                      <span className="font-black text-[#0F172A] text-sm">{r.strategy}</span>
+                      <span className="text-[#64748B]">({r.supplier_name})</span>
                       {hasViolations ? (
-                        <span className="px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 text-[10px] font-bold">
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#FEE2E2] text-[#EF4444] border border-[#FECACA] text-[10px] font-extrabold">
                           Constraint Violation
                         </span>
                       ) : (
-                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[10px] font-bold">
+                        <span className="px-2.5 py-0.5 rounded-full bg-[#FEF3C7] text-[#D97706] border border-[#FDE68A] text-[10px] font-extrabold">
                           Lower Pareto Score ({r.score}/100)
                         </span>
                       )}
                     </div>
-                    <p className="text-slate-400 text-xs leading-relaxed">
+                    <p className="text-[#475569] text-xs leading-relaxed">
                       {hasViolations
                         ? `Violations: ${r.violations?.join(', ')}`
                         : `Spend: ₹${r.total_cost?.toLocaleString('en-IN')} | Lead Time: ${r.lead_time_days} days | Score: ${r.score}`}
                     </p>
                   </div>
 
-                  <span className="text-slate-500 font-mono text-xs self-start sm:self-center bg-slate-900 px-2.5 py-1 rounded-lg border border-slate-800">
+                  <span className="text-[#64748B] font-mono text-xs self-start sm:self-center bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
                     {r.option_id}
                   </span>
                 </div>
